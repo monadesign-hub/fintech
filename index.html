@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W3Craft — Fintech & Web3 Design Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── DESIGN TOKENS ──────────────────────────── */
+:root {
+  /* backgrounds — cool blue-black */
+  --ink:         #07080f;
+  --ink2:        #0c0e1c;
+  --ink3:        #111428;
+  --surface:     #090b16;
+  --s2:          #0f1224;
+  --s3:          #161a30;
+  --s4:          #1e2340;
+  --rule:        rgba(120,130,255,0.11);
+  --rule2:       rgba(120,130,255,0.20);
+
+  /* text — cool off-white, lifted for readability */
+  --parchment:   #eceef8;          /* primary — near white, cool tinted */
+  --parchment2:  #c4c8e2;          /* secondary headings, card titles */
+  --parchment3:  #8e94bc;          /* body text, definitions — was too dark */
+  --parchment4:  #5a6090;          /* meta, labels, counts — was near-invisible */
+
+  /* primary accent — violet-purple */
+  --gold:        #9d90fa;          /* slightly brighter for contrast on dark */
+  --gold-lt:     rgba(157,144,250,.13);
+  --gold-md:     rgba(157,144,250,.28);
+
+  /* secondary accent — sky blue */
+  --accent2:     #60b4ff;
+  --accent2-lt:  rgba(96,180,255,.10);
+  --accent2-md:  rgba(96,180,255,.22);
+
+  /* gradient */
+  --grad:        linear-gradient(135deg, #9d90fa 0%, #60b4ff 100%);
+  --grad-text:   linear-gradient(135deg, #b8aeff 0%, #82caff 100%);
+  --grad-subtle: linear-gradient(135deg, rgba(157,144,250,.14) 0%, rgba(96,180,255,.09) 100%);
+
+  /* semantic — brightened to pass contrast on dark bg */
+  --red:       #ff8a8a;
+  --red-lt:    rgba(255,138,138,.13);
+  --green:     #5de8ac;
+  --green-lt:  rgba(93,232,172,.12);
+
+  --sidebar-w: 240px;
+  --detail-w:  380px;
+  --r:         6px;
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+html, body {
+  height:100%;
+  font-family:'DM Sans', sans-serif;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--parchment);
+  background:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Ambient gradient mesh */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(139,124,248,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(77,166,255,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%, rgba(100,80,220,0.03) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+.app {
+  display:grid;
+  grid-template-columns: var(--sidebar-w) 1fr var(--detail-w);
+  grid-template-rows: 52px 1fr;
+  height:100vh;
+  overflow:hidden;
+  position:relative;
+  z-index:1;
+}
+
+/* scrollbars */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--s4); border-radius:2px; }
+
+/* ─── TOPBAR ─────────────────────────────────── */
+.topbar {
+  grid-column:1/-1;
+  background:var(--ink2);
+  border-bottom:1px solid var(--rule2);
+  display:flex;
+  align-items:center;
+  padding:0 22px;
+  gap:16px;
+  position:relative;
+  z-index:20;
+}
+.topbar::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(139,124,248,0.4) 30%, rgba(77,166,255,0.4) 70%, transparent 100%);
+}
+
+.wordmark {
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  flex-shrink:0;
+}
+.wm-title {
+  font-family:'DM Serif Display', serif;
+  font-size:18px;
+  color:var(--parchment);
+  letter-spacing:.01em;
+}
+.wm-title em {
+  font-style:italic;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.wm-sep { width:1px; height:14px; background:var(--rule2); }
+.wm-sub {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+}
+
+.top-sep { width:1px; height:22px; background:var(--rule); flex-shrink:0; }
+
+.search-field {
+  flex:1;
+  max-width:480px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  padding:7px 12px;
+  transition:border-color .15s;
+}
+.search-field:focus-within {
+  border-color:var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-lt);
+}
+.search-field input {
+  flex:1;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  font-family:'DM Sans', sans-serif;
+  color:var(--parchment);
+  outline:none;
+}
+.search-field input::placeholder { color:var(--parchment3); }
+.sf-icon { color:var(--parchment3); font-size:12px; }
+.sf-kbd {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  color:var(--parchment3);
+  background:var(--s3);
+  border:1px solid var(--rule2);
+  padding:1px 6px;
+  border-radius:3px;
+}
+
+.top-meta {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.meta-chip {
+  font-family:'DM Mono', monospace;
+  font-size:10px;
+  letter-spacing:.06em;
+  padding:4px 11px;
+  border-radius:100px;
+  border:1px solid var(--rule2);
+  color:var(--parchment3);
+  background:var(--s2);
+}
+.meta-chip.gold {
+  border-color: var(--gold-md);
+  color: var(--gold);
+  background: var(--grad-subtle);
+}
+
+/* ─── SIDEBAR ────────────────────────────────── */
+.sidebar {
+  background:var(--ink2);
+  border-right:1px solid var(--rule);
+  overflow-y:auto;
+  padding:20px 0 32px;
+  display:flex;
+  flex-direction:column;
+}
+
+.nav-section {
+  padding:0 14px;
+  margin-bottom:4px;
+}
+.nav-section-label {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+  padding:0 6px;
+  margin-bottom:4px;
+  margin-top:18px;
+  display:block;
+}
+.nav-section-label:first-child { margin-top:0; }
+
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 8px;
+  border-radius:5px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:400;
+  color:var(--parchment2);
+  transition:all .12s;
+  margin-bottom:1px;
+  user-select:none;
+  position:relative;
+}
+.nav-item:hover { background:var(--s3); color:var(--parchment); }
+.nav-item.active {
+  background:var(--gold-lt);
+  color:var(--gold);
+  font-weight:500;
+  border:1px solid var(--gold-md);
+}
+.n-icon { font-size:12px; width:16px; text-align:center; opacity:.7; flex-shrink:0; }
+.nav-item.active .n-icon { opacity:1; }
+.n-label { flex:1; line-height:1.3; }
+.n-badge {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  color:var(--parchment3);
+  background:var(--s3);
+  border:1px solid var(--rule2);
+  padding:1px 6px;
+  border-radius:3px;
+  flex-shrink:0;
+}
+.nav-item.active .n-badge { background:var(--gold-lt); border-color:var(--gold-md); color:var(--gold); }
+
+.nav-sub { padding-left:6px; }
+.nav-sub .nav-item { font-size:12.5px; }
+.nav-sub .nav-item::before {
+  content:'';
+  position:absolute;
+  left:-8px; top:50%;
+  transform:translateY(-50%);
+  width:2px; height:12px;
+  background:var(--s4);
+  border-radius:1px;
+}
+.nav-sub .nav-item.active::before { background:var(--gold); }
+
+.nav-rule { height:1px; background:var(--rule); margin:10px 14px; }
+
+/* ─── MAIN ───────────────────────────────────── */
+.main {
+  overflow-y:auto;
+  background:var(--surface);
+}
+.view { display:none; }
+.view.active { display:block; animation:appear .2s ease; }
+@keyframes appear { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:none; } }
+
+/* ── OVERVIEW / HOME ── */
+.overview {
+  max-width:900px;
+  margin:0 auto;
+  padding:52px 44px 80px;
+}
+
+.ov-eyebrow {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:28px;
+}
+.ov-line { flex:1; height:1px; background:var(--rule2); }
+.ov-tag {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.ov-title {
+  font-family:'DM Serif Display', serif;
+  font-size:48px;
+  line-height:1.05;
+  letter-spacing:-.02em;
+  color:var(--parchment);
+  margin-bottom:18px;
+}
+.ov-title em {
+  font-style:italic;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.ov-desc {
+  font-size:15px;
+  font-weight:400;
+  color:var(--parchment2);
+  line-height:1.78;
+  max-width:640px;
+  margin-bottom:52px;
+  border-left:2px solid var(--gold);
+  padding-left:20px;
+  border-image: var(--grad) 1;
+}
+
+/* Metrics strip */
+.metrics-strip {
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule2);
+  border-radius:var(--r);
+  overflow:hidden;
+  margin-bottom:56px;
+}
+.metric-cell {
+  background:var(--s2);
+  padding:18px 20px;
+  text-align:center;
+}
+.mc-n {
+  font-family:'DM Serif Display', serif;
+  font-size:36px;
+  line-height:1;
+  margin-bottom:5px;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.mc-l {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+}
+
+/* Section heading */
+.section-heading {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+.sh-text {
+  font-family:'DM Serif Display', serif;
+  font-size:16px;
+  color:var(--parchment2);
+  letter-spacing:-.01em;
+  flex-shrink:0;
+}
+.sh-rule { flex:1; height:1px; background:var(--rule); }
+
+/* Challenges grid (home) */
+.challenges-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:52px;
+}
+.ch-card {
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  padding:18px 20px;
+  cursor:pointer;
+  transition:border-color .15s, background .12s;
+  position:relative;
+  overflow:hidden;
+}
+.ch-card:hover { border-color:var(--rule2); background:var(--s3); }
+.ch-card::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:2px;
+}
+.ch-track {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+  margin-bottom:7px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.ch-track-dot {
+  width:5px; height:5px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.ch-q {
+  font-family:'DM Serif Display', serif;
+  font-size:13.5px;
+  font-weight:400;
+  color:var(--parchment);
+  line-height:1.4;
+  margin-bottom:6px;
+  letter-spacing:-.01em;
+}
+.ch-principle {
+  font-size:12px;
+  font-weight:400;
+  font-style:italic;
+  color:var(--parchment3);
+  line-height:1.5;
+}
+
+/* Glossary map (home) */
+.gloss-map {
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+  margin-bottom:52px;
+}
+.gm-cell {
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  padding:14px 16px;
+  cursor:pointer;
+  transition:border-color .15s;
+  border-top:2px solid transparent;
+}
+.gm-cell:hover { border-color:var(--rule2); }
+.gm-icon { font-size:16px; margin-bottom:8px; }
+.gm-name { font-size:12.5px; font-weight:500; color:var(--parchment2); margin-bottom:3px; line-height:1.3; }
+.gm-count { font-family:'DM Mono', monospace; font-size:10px; color:var(--parchment3); }
+
+/* ── LIST VIEWS ── */
+.list-header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--surface);
+  border-bottom:1px solid var(--rule2);
+  padding:18px 28px 14px;
+}
+.lh-row { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; }
+.lh-title {
+  font-family:'DM Serif Display', serif;
+  font-size:22px;
+  color:var(--parchment);
+  letter-spacing:-.02em;
+  flex:1;
+}
+.lh-count {
+  font-family:'DM Mono', monospace;
+  font-size:10px;
+  color:var(--parchment3);
+  border:1px solid var(--rule2);
+  padding:2px 9px;
+  border-radius:3px;
+}
+.list-search-bar {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  padding:7px 12px;
+  transition:border-color .15s;
+}
+.list-search-bar:focus-within {
+  border-color:var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-lt);
+}
+.list-search-bar input {
+  flex:1; border:none; background:transparent;
+  font-size:13px; font-family:'DM Sans',sans-serif;
+  color:var(--parchment); outline:none;
+}
+.list-search-bar input::placeholder { color:var(--parchment3); }
+
+.filter-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  padding:10px 28px 12px;
+  border-bottom:1px solid var(--rule);
+  background:var(--surface);
+}
+.fpill {
+  font-family:'DM Mono', monospace;
+  font-size:10px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:4px 11px;
+  border-radius:3px;
+  border:1px solid var(--rule2);
+  background:transparent;
+  color:var(--parchment3);
+  cursor:pointer;
+  transition:all .12s;
+}
+.fpill:hover { border-color:var(--gold-md); color:var(--parchment2); }
+.fpill.active {
+  background: var(--grad-subtle);
+  border-color: var(--gold-md);
+  color: var(--gold);
+}
+
+.cards-area { padding:20px 28px 60px; }
+
+/* Glossary grid */
+.g-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+  gap:6px;
+}
+.g-card {
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  padding:14px 16px;
+  cursor:pointer;
+  transition:border-color .12s, background .12s;
+  border-left:2px solid transparent;
+  position:relative;
+}
+.g-card:hover { background:var(--s3); }
+.g-card.selected { background:var(--s3); border-color:var(--rule2); }
+.g-card.hidden { display:none; }
+.g-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.g-cat {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+}
+.g-lv {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  color:var(--parchment3);
+  padding:1px 6px;
+  border:1px solid var(--rule2);
+  border-radius:2px;
+}
+.g-lv.lv-f { color:var(--green); border-color:rgba(39,174,96,.2); }
+.g-lv.lv-i { color:var(--gold); border-color:var(--gold-md); }
+.g-lv.lv-a { color:var(--red); border-color:rgba(192,57,43,.2); }
+.g-term {
+  font-family:'DM Serif Display', serif;
+  font-size:15px;
+  color:var(--parchment);
+  margin-bottom:5px;
+  letter-spacing:-.01em;
+  line-height:1.3;
+}
+.g-def { font-size:12.5px; font-weight:400; color:var(--parchment2); line-height:1.58; }
+
+/* Question list */
+.q-list { display:flex; flex-direction:column; gap:5px; }
+.q-card {
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  overflow:hidden;
+  cursor:pointer;
+  transition:border-color .12s;
+  border-left:2px solid transparent;
+}
+.q-card:hover { border-color:var(--rule2); }
+.q-card.open { border-left-color:var(--gold); }
+.q-card.hidden { display:none; }
+.q-head {
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:15px 16px;
+}
+.q-principle-block { flex:1; min-width:0; }
+.q-principle-name {
+  font-family:'DM Serif Display', serif;
+  font-size:14.5px;
+  font-weight:400;
+  color:var(--parchment);
+  line-height:1.35;
+  letter-spacing:-.01em;
+  margin-bottom:5px;
+}
+.q-stance {
+  font-size:12.5px;
+  font-weight:400;
+  color:var(--parchment3);
+  line-height:1.5;
+  font-style:italic;
+}
+.q-meta {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-shrink:0;
+}
+.d-pip {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:2px 8px;
+  border-radius:3px;
+  border:1px solid;
+}
+.dp-f { color:var(--green); border-color:rgba(93,232,172,.3); background:var(--green-lt); }
+.dp-i { color:var(--gold); border-color:var(--gold-md); background:var(--gold-lt); }
+.dp-a { color:var(--red); border-color:rgba(255,138,138,.3); background:var(--red-lt); }
+.q-arrow { font-size:10px; color:var(--parchment3); transition:transform .2s; flex-shrink:0; padding-top:3px; }
+.q-card.open .q-arrow { transform:rotate(180deg); color:var(--gold); }
+
+.q-body {
+  display:none;
+  padding:0 16px 16px 50px;
+  border-top:1px solid var(--rule2);
+  background:var(--ink2);
+}
+.q-card.open .q-body { display:block; animation:appear .15s ease; }
+.q-body-inner { padding-top:14px; }
+
+.answer-block {
+  background:var(--s2);
+  border:1px solid var(--rule2);
+  border-left:2px solid var(--gold);
+  border-radius:0 var(--r) var(--r) 0;
+  padding:13px 16px;
+  margin-bottom:10px;
+}
+.ab-label {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:7px;
+}
+.ab-text { font-size:13.5px; font-weight:400; color:var(--parchment2); line-height:1.72; }
+
+.insight-block {
+  background:transparent;
+  border:1px solid var(--rule2);
+  border-radius:var(--r);
+  padding:10px 13px;
+  font-size:12.5px;
+  font-weight:400;
+  font-style:italic;
+  color:var(--parchment3);
+  line-height:1.6;
+  margin-bottom:10px;
+}
+.insight-block::before { content:'— '; }
+
+.q-tags { display:flex; flex-wrap:wrap; gap:4px; }
+.q-tag {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:2px 8px;
+  border-radius:2px;
+  border:1px solid var(--rule);
+  color:var(--parchment4);
+  background:transparent;
+}
+
+/* ─── DETAIL PANEL ───────────────────────────── */
+.detail-panel {
+  background:var(--ink2);
+  border-left:1px solid var(--rule);
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+}
+
+.detail-empty {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── Featured panel ── */
+.feat-panel { padding:28px 26px 40px; }
+
+.fp-eyebrow {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:22px;
+}
+.fp-eyebrow-line { flex:1; height:1px; background:var(--rule); }
+.fp-eyebrow-text {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  flex-shrink:0;
+}
+
+.fp-principle {
+  font-family:'DM Serif Display', serif;
+  font-size:22px;
+  font-weight:400;
+  color:var(--parchment);
+  line-height:1.2;
+  letter-spacing:-.025em;
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.fp-principle:hover { opacity:.8; }
+
+.fp-stance {
+  font-size:14px;
+  font-style:italic;
+  font-weight:400;
+  color:var(--parchment2);
+  line-height:1.65;
+  border-left:2px solid var(--gold);
+  padding-left:16px;
+  margin-bottom:20px;
+}
+
+.fp-rationale {
+  font-size:13px;
+  color:var(--parchment3);
+  line-height:1.72;
+  margin-bottom:18px;
+}
+
+.fp-cat {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-family:'DM Mono', monospace;
+  font-size:9.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:3px 10px;
+  border-radius:3px;
+  border:1px solid;
+  margin-bottom:28px;
+  cursor:pointer;
+}
+
+/* ── Quick reference legend ── */
+.fp-divider {
+  height:1px;
+  background:var(--rule);
+  margin:0 0 22px;
+}
+
+.fp-legend-title {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--parchment4);
+  margin-bottom:14px;
+}
+
+.fp-legend { display:flex; flex-direction:column; gap:8px; margin-bottom:28px; }
+.fp-legend-row {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:10px 12px;
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+}
+.fp-legend-badge {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:2px 8px;
+  border-radius:3px;
+  border:1px solid;
+  flex-shrink:0;
+  margin-top:1px;
+}
+.fp-legend-desc {
+  font-size:12px;
+  color:var(--parchment3);
+  line-height:1.55;
+}
+
+/* ── Domain count grid ── */
+.fp-domains {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+}
+.fp-domain-chip {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:border-color .12s, background .12s;
+  border-left:2px solid transparent;
+}
+.fp-domain-chip:hover { background:var(--s3); border-color:var(--rule2); }
+.fp-domain-icon { font-size:12px; opacity:.8; }
+.fp-domain-name { font-size:11.5px; color:var(--parchment2); flex:1; line-height:1.3; }
+.fp-domain-n {
+  font-family:'DM Mono', monospace;
+  font-size:9.5px;
+  color:var(--parchment4);
+}
+
+.detail-body { padding:28px 26px 48px; }
+.db-type {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--parchment4);
+  margin-bottom:8px;
+}
+.db-title {
+  font-family:'DM Serif Display', serif;
+  font-size:24px;
+  color:var(--parchment);
+  letter-spacing:-.02em;
+  line-height:1.2;
+  margin-bottom:8px;
+}
+.db-cat {
+  font-family:'DM Mono', monospace;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:3px 10px;
+  border-radius:3px;
+  border:1px solid var(--rule2);
+  display:inline-block;
+  margin-bottom:20px;
+}
+.db-def {
+  font-size:14px;
+  font-weight:400;
+  color:var(--parchment2);
+  line-height:1.78;
+  margin-bottom:20px;
+}
+.db-section-label {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--parchment3);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.db-section-label::after { content:''; flex:1; height:1px; background:var(--rule2); }
+
+.db-eg {
+  background:var(--s2);
+  border:1px solid var(--rule2);
+  border-left:2px solid var(--gold);
+  border-radius:0 var(--r) var(--r) 0;
+  padding:12px 16px;
+  font-size:13.5px;
+  font-weight:400;
+  color:var(--parchment2);
+  line-height:1.7;
+  margin-bottom:20px;
+}
+.db-answer {
+  background:var(--s2);
+  border:1px solid var(--rule2);
+  border-radius:var(--r);
+  padding:14px 16px;
+  margin-bottom:12px;
+}
+.db-answer-label {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:8px;
+}
+.db-answer-text { font-size:13.5px; font-weight:400; color:var(--parchment2); line-height:1.72; }
+.db-insight {
+  font-size:13px;
+  font-weight:400;
+  font-style:italic;
+  color:var(--parchment3);
+  line-height:1.65;
+  padding:10px 14px;
+  border-left:2px solid var(--s4);
+  margin-bottom:16px;
+}
+.db-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:20px; }
+.db-tag {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border-radius:2px;
+  border:1px solid var(--rule2);
+  color:var(--parchment4);
+}
+.db-rule { height:1px; background:var(--rule); margin:18px 0; }
+.db-related-title {
+  font-family:'DM Mono', monospace;
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--parchment4);
+  margin-bottom:9px;
+}
+.db-related-list { display:flex; flex-direction:column; gap:4px; }
+.db-rel-item {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  padding:8px 12px;
+  background:var(--s2);
+  border:1px solid var(--rule);
+  border-radius:var(--r);
+  cursor:pointer;
+  font-size:12.5px;
+  color:var(--parchment3);
+  line-height:1.45;
+  transition:border-color .12s, color .12s;
+}
+.db-rel-item:hover { border-color:var(--rule2); color:var(--parchment); }
+.db-rel-arrow { color:var(--parchment4); flex-shrink:0; font-size:11px; }
+
+/* cat colour map for card borders & detail */
+.cb-blockchain  { border-left-color:#8b7cf8; }
+.cb-consensus   { border-left-color:#50d49a; }
+.cb-defi        { border-left-color:#4da6ff; }
+.cb-nft         { border-left-color:#f07878; }
+.cb-tokens      { border-left-color:#f5c842; }
+.cb-wallets     { border-left-color:#e070b0; }
+.cb-exchange    { border-left-color:#50d49a; }
+.cb-layer2      { border-left-color:#8090c0; }
+.cb-cex-t       { border-left-color:#6898e0; }
+.cb-cex-m       { border-left-color:#40c4b0; }
+.cb-cex-r       { border-left-color:#f07878; }
+.cb-cex-c       { border-left-color:#f5a050; }
+.cb-cex-p       { border-left-color:#a070e0; }
+.cb-cex-cu      { border-left-color:#50d49a; }
+
+.cat-chip-bc   { color:#a89dff; border-color:rgba(139,124,248,.3); }
+.cat-chip-cs   { color:#60e4aa; border-color:rgba(80,212,154,.3); }
+.cat-chip-df   { color:#6ab8ff; border-color:rgba(77,166,255,.3); }
+.cat-chip-nf   { color:#f09090; border-color:rgba(240,120,120,.3); }
+.cat-chip-tk   { color:#f8d860; border-color:rgba(245,200,66,.3); }
+.cat-chip-wl   { color:#e898c8; border-color:rgba(224,112,176,.3); }
+.cat-chip-ex   { color:#60e4aa; border-color:rgba(80,212,154,.3); }
+.cat-chip-l2   { color:#90a8d8; border-color:rgba(128,144,192,.3); }
+.cat-chip-ct   { color:#88b4f0; border-color:rgba(104,152,224,.3); }
+.cat-chip-cm   { color:#50d4c0; border-color:rgba(64,196,176,.3); }
+.cat-chip-cr   { color:#f09090; border-color:rgba(240,120,120,.3); }
+.cat-chip-cc   { color:#f8b868; border-color:rgba(245,160,80,.3); }
+.cat-chip-cp   { color:#c090f0; border-color:rgba(160,112,224,.3); }
+.cat-chip-ccu  { color:#60e4aa; border-color:rgba(80,212,154,.3); }
+
+/* q track colours */
+.qc-ux   { border-left-color:#8b7cf8; }
+.qc-str  { border-left-color:#50d49a; }
+.qc-res  { border-left-color:#a070e0; }
+.qc-ds   { border-left-color:#f5c842; }
+.qc-eth  { border-left-color:#f07878; }
+.qc-met  { border-left-color:#50d49a; }
+.qc-tux  { border-left-color:#6898e0; }
+.qc-trs  { border-left-color:#40c4b0; }
+.qc-rsk  { border-left-color:#f07878; }
+.qc-kyc  { border-left-color:#f5a050; }
+.qc-dat  { border-left-color:#a070e0; }
+
+/* gm-cell top border colours */
+.gmt-bc { border-top-color:#8b7cf8; }
+.gmt-cs { border-top-color:#50d49a; }
+.gmt-df { border-top-color:#4da6ff; }
+.gmt-nf { border-top-color:#f07878; }
+.gmt-tk { border-top-color:#f5c842; }
+.gmt-wl { border-top-color:#e070b0; }
+.gmt-ex { border-top-color:#50d49a; }
+.gmt-l2 { border-top-color:#8090c0; }
+.gmt-cx { border-top-color:#6898e0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="wordmark">
+    <span class="wm-title">W3<em>Craft</em></span>
+    <span class="wm-sep"></span>
+    <span class="wm-sub">Fintech & Web3 Design Reference</span>
+  </div>
+  <div class="top-sep"></div>
+  <div class="search-field">
+    <span class="sf-icon">⌕</span>
+    <input type="text" id="global-q" placeholder="Search concepts, frameworks, principles…" oninput="globalSearch()">
+    <span class="sf-kbd">⌘K</span>
+  </div>
+  <div class="top-meta">
+    <div class="meta-chip">100 concepts</div>
+    <div class="meta-chip">50 principles</div>
+    <div class="meta-chip gold">Web3 · CEX · CeFi</div>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="nav-section">
+    <span class="nav-section-label">Navigation</span>
+    <div class="nav-item active" id="nv-home" onclick="showView('home',this)">
+      <span class="n-icon">◈</span>
+      <span class="n-label">Overview</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Design Principles</span>
+    <div class="nav-item" id="nv-q-All" onclick="showPrinciples('All',this)">
+      <span class="n-icon">◇</span>
+      <span class="n-label">All 50 Principles</span>
+      <span class="n-badge">50</span>
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" id="nv-q-UX & Usability" onclick="showPrinciples('UX & Usability',this)">
+        <span class="n-label">UX & Usability</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Strategy" onclick="showPrinciples('Strategy',this)">
+        <span class="n-label">Strategy</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-User Research" onclick="showPrinciples('User Research',this)">
+        <span class="n-label">User Research</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Design Systems" onclick="showPrinciples('Design Systems',this)">
+        <span class="n-label">Design Systems</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Ethics & Trust" onclick="showPrinciples('Ethics & Trust',this)">
+        <span class="n-label">Ethics & Trust</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Metrics & Growth" onclick="showPrinciples('Metrics & Growth',this)">
+        <span class="n-label">Metrics & Growth</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Trading UX" onclick="showPrinciples('Trading UX',this)">
+        <span class="n-label">Trading UX</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Trust & Safety" onclick="showPrinciples('Trust & Safety',this)">
+        <span class="n-label">Trust & Safety</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Risk Communication" onclick="showPrinciples('Risk Communication',this)">
+        <span class="n-label">Risk Communication</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-q-Onboarding & KYC" onclick="showPrinciples('Onboarding & KYC',this)">
+        <span class="n-label">Onboarding & KYC</span><span class="n-badge">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-rule"></div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Concepts — Web3</span>
+    <div class="nav-item" id="nv-g-All" onclick="showGlossary('All',this)">
+      <span class="n-icon">◈</span>
+      <span class="n-label">All 100 Terms</span>
+      <span class="n-badge">100</span>
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item" id="nv-g-Blockchain Core" onclick="showGlossary('Blockchain Core',this)">
+        <span class="n-label">Blockchain Core</span><span class="n-badge">10</span>
+      </div>
+      <div class="nav-item" id="nv-g-Consensus" onclick="showGlossary('Consensus',this)">
+        <span class="n-label">Consensus</span><span class="n-badge">5</span>
+      </div>
+      <div class="nav-item" id="nv-g-DeFi" onclick="showGlossary('DeFi',this)">
+        <span class="n-label">DeFi</span><span class="n-badge">8</span>
+      </div>
+      <div class="nav-item" id="nv-g-NFT & Web3" onclick="showGlossary('NFT & Web3',this)">
+        <span class="n-label">NFT & Web3</span><span class="n-badge">7</span>
+      </div>
+      <div class="nav-item" id="nv-g-Tokens & Assets" onclick="showGlossary('Tokens & Assets',this)">
+        <span class="n-label">Tokens & Assets</span><span class="n-badge">6</span>
+      </div>
+      <div class="nav-item" id="nv-g-Wallets & Security" onclick="showGlossary('Wallets & Security',this)">
+        <span class="n-label">Wallets & Security</span><span class="n-badge">6</span>
+      </div>
+      <div class="nav-item" id="nv-g-Exchange & Trading" onclick="showGlossary('Exchange & Trading',this)">
+        <span class="n-label">Exchange & Trading</span><span class="n-badge">7</span>
+      </div>
+      <div class="nav-item" id="nv-g-Layer 2 & Scaling" onclick="showGlossary('Layer 2 & Scaling',this)">
+        <span class="n-label">Layer 2 & Scaling</span><span class="n-badge">5</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-rule"></div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Concepts — CEX / CeFi</span>
+    <div class="nav-sub">
+      <div class="nav-item" id="nv-g-CEX Trading" onclick="showGlossary('CEX Trading',this)">
+        <span class="n-label">Trading Mechanics</span><span class="n-badge">10</span>
+      </div>
+      <div class="nav-item" id="nv-g-CEX Market" onclick="showGlossary('CEX Market',this)">
+        <span class="n-label">Market Structure</span><span class="n-badge">7</span>
+      </div>
+      <div class="nav-item" id="nv-g-CEX Risk" onclick="showGlossary('CEX Risk',this)">
+        <span class="n-label">Risk Management</span><span class="n-badge">8</span>
+      </div>
+      <div class="nav-item" id="nv-g-CEX Compliance" onclick="showGlossary('CEX Compliance',this)">
+        <span class="n-label">Compliance & Reg</span><span class="n-badge">8</span>
+      </div>
+      <div class="nav-item" id="nv-g-CEX Products" onclick="showGlossary('CEX Products',this)">
+        <span class="n-label">Products & Services</span><span class="n-badge">7</span>
+      </div>
+      <div class="nav-item" id="nv-g-CEX Custody" onclick="showGlossary('CEX Custody',this)">
+        <span class="n-label">Custody & Settlement</span><span class="n-badge">5</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- OVERVIEW -->
+  <div class="view active" id="view-home">
+    <div class="overview">
+      <div class="ov-eyebrow">
+        <span class="ov-tag">W3Craft · Professional Reference</span>
+        <div class="ov-line"></div>
+      </div>
+
+      <div class="ov-title">Fintech & Web3<br><em>Design Reference.</em></div>
+
+      <div class="ov-desc">
+        A working reference for product designers operating at the intersection of decentralised and centralised finance. 100 concepts, 50 design frameworks — written to inform how you think, how you present, and how you challenge decisions across teams.
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-cell"><div class="mc-n">50</div><div class="mc-l">Web3 Concepts</div></div>
+        <div class="metric-cell"><div class="mc-n">50</div><div class="mc-l">CeFi / CEX Concepts</div></div>
+        <div class="metric-cell"><div class="mc-n">50</div><div class="mc-l">Design Principles</div></div>
+        <div class="metric-cell"><div class="mc-n">14</div><div class="mc-l">Domains</div></div>
+        <div class="metric-cell"><div class="mc-n">3</div><div class="mc-l">Depth Levels</div></div>
+      </div>
+
+      <div class="section-heading">
+        <span class="sh-text">Design Principles</span>
+        <div class="sh-rule"></div>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--parchment3);letter-spacing:.1em;cursor:pointer" onclick="showPrinciples('All')">VIEW ALL →</span>
+      </div>
+      <div class="challenges-grid" id="home-challenges"></div>
+
+      <div class="section-heading">
+        <span class="sh-text">Concept Domains</span>
+        <div class="sh-rule"></div>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--parchment3);letter-spacing:.1em;cursor:pointer" onclick="showGlossary('All')">VIEW ALL →</span>
+      </div>
+      <div class="gloss-map" id="home-glossmap"></div>
+    </div>
+  </div>
+
+  <!-- GLOSSARY -->
+  <div class="view" id="view-glossary">
+    <div class="list-header">
+      <div class="lh-row">
+        <div class="lh-title" id="g-view-title">All Concepts</div>
+        <div class="lh-count" id="g-view-count">100 terms</div>
+      </div>
+      <div class="list-search-bar">
+        <span style="color:var(--parchment3);font-size:12px">⌕</span>
+        <input type="text" id="g-search" placeholder="Search concepts and definitions…" oninput="renderGlossary()">
+      </div>
+    </div>
+    <div class="filter-row" id="g-filter-row"></div>
+    <div class="cards-area">
+      <div class="g-grid" id="g-grid"></div>
+    </div>
+  </div>
+
+  <!-- PRINCIPLES -->
+  <div class="view" id="view-questions">
+    <div class="list-header">
+      <div class="lh-row">
+        <div class="lh-title" id="q-view-title">Design Principles</div>
+        <div class="lh-count" id="q-view-count">50 principles</div>
+      </div>
+      <div class="list-search-bar">
+        <span style="color:var(--parchment3);font-size:12px">⌕</span>
+        <input type="text" id="q-search" placeholder="Search principles and stances…" oninput="renderPrinciples()">
+      </div>
+    </div>
+    <div class="filter-row" id="q-filter-row"></div>
+    <div class="cards-area">
+      <div class="q-list" id="q-list"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── DETAIL PANEL ── -->
+<aside class="detail-panel" id="detail-panel">
+  <div class="detail-empty" id="de-empty">
+    <div class="feat-panel" id="feat-panel">
+      <!-- populated by buildFeaturedPanel() -->
+    </div>
+  </div>
+  <div class="detail-body" id="de-body" style="display:none"></div>
+</aside>
+
+</div>
+
+<script>
+// ─── METADATA ──────────────────────────────────────────────────────────
+
+const G_META = {
+  "Blockchain Core":   { cb:"cb-blockchain", chip:"cat-chip-bc", gmt:"gmt-bc", icon:"⛓", color:"#8b7cf8" },
+  "Consensus":         { cb:"cb-consensus",  chip:"cat-chip-cs", gmt:"gmt-cs", icon:"⚙", color:"#50d49a" },
+  "DeFi":              { cb:"cb-defi",       chip:"cat-chip-df", gmt:"gmt-df", icon:"⚡", color:"#4da6ff" },
+  "NFT & Web3":        { cb:"cb-nft",        chip:"cat-chip-nf", gmt:"gmt-nf", icon:"◈", color:"#f07878" },
+  "Tokens & Assets":   { cb:"cb-tokens",     chip:"cat-chip-tk", gmt:"gmt-tk", icon:"◎", color:"#f5c842" },
+  "Wallets & Security":{ cb:"cb-wallets",    chip:"cat-chip-wl", gmt:"gmt-wl", icon:"⬡", color:"#e070b0" },
+  "Exchange & Trading":{ cb:"cb-exchange",   chip:"cat-chip-ex", gmt:"gmt-ex", icon:"⇄", color:"#50d49a" },
+  "Layer 2 & Scaling": { cb:"cb-layer2",     chip:"cat-chip-l2", gmt:"gmt-l2", icon:"▲", color:"#8090c0" },
+  "CEX Trading":       { cb:"cb-cex-t",      chip:"cat-chip-ct", gmt:"gmt-cx", icon:"↕", color:"#6898e0" },
+  "CEX Market":        { cb:"cb-cex-m",      chip:"cat-chip-cm", gmt:"gmt-cx", icon:"⊞", color:"#40c4b0" },
+  "CEX Risk":          { cb:"cb-cex-r",      chip:"cat-chip-cr", gmt:"gmt-cx", icon:"⊘", color:"#f07878" },
+  "CEX Compliance":    { cb:"cb-cex-c",      chip:"cat-chip-cc", gmt:"gmt-cx", icon:"⊛", color:"#f5a050" },
+  "CEX Products":      { cb:"cb-cex-p",      chip:"cat-chip-cp", gmt:"gmt-cx", icon:"◆", color:"#a070e0" },
+  "CEX Custody":       { cb:"cb-cex-cu",     chip:"cat-chip-ccu",gmt:"gmt-cx", icon:"⬒", color:"#50d49a" },
+};
+
+const Q_META = {
+  "UX & Usability":    { qc:"qc-ux",  color:"#8b7cf8" },
+  "Strategy":          { qc:"qc-str", color:"#50d49a" },
+  "User Research":     { qc:"qc-res", color:"#a070e0" },
+  "Design Systems":    { qc:"qc-ds",  color:"#f5c842" },
+  "Ethics & Trust":    { qc:"qc-eth", color:"#f07878" },
+  "Metrics & Growth":  { qc:"qc-met", color:"#50d49a" },
+  "Trading UX":        { qc:"qc-tux", color:"#6898e0" },
+  "Trust & Safety":    { qc:"qc-trs", color:"#40c4b0" },
+  "Risk Communication":{ qc:"qc-rsk", color:"#f07878" },
+  "Onboarding & KYC":  { qc:"qc-kyc", color:"#f5a050" },
+  "Data & Analytics":  { qc:"qc-dat", color:"#a070e0" },
+};
+
+const LV_CLS = { Foundational:"lv-f", Intermediate:"lv-i", Advanced:"lv-a" };
+const DIFF_CLS = { foundational:"dp-f", intermediate:"dp-i", advanced:"dp-a" };
+
+// ─── DATA ──────────────────────────────────────────────────────────────
+const GLOSSARY = [
+  {t:"Blockchain",c:"Blockchain Core",d:"A distributed, immutable ledger of transactions grouped into cryptographically linked blocks. Each block contains a hash of the previous block, forming a tamper-evident chain that no single party controls.",eg:"Bitcoin's blockchain has recorded every transaction since 2009, forming a ~500 GB chain of immutable blocks verified by thousands of independent nodes.",lv:"Foundational"},
+  {t:"Block",c:"Blockchain Core",d:"A container of transactions bundled with metadata: timestamp, previous block hash, nonce, and Merkle root. New blocks are added through the network's consensus mechanism.",eg:"Bitcoin blocks are created every ~10 minutes and contain up to approximately 2,000 transactions plus the coinbase reward for the miner.",lv:"Foundational"},
+  {t:"Hash Function",c:"Blockchain Core",d:"A one-way cryptographic function converting any input into a fixed-length string. The same input always yields the same output; even a one-character change produces a completely different hash.",eg:"SHA-256 is used in Bitcoin mining: miners search for a nonce value such that SHA-256(block data) starts with a required number of leading zeros.",lv:"Foundational"},
+  {t:"Merkle Tree",c:"Blockchain Core",d:"A binary tree where leaf nodes are hashes of individual transactions and each parent node is the hash of its two children. The Merkle root in the block header efficiently summarises all transactions.",eg:"Bitcoin SPV wallets use Merkle proofs to verify a single transaction is included in a block without downloading the entire block.",lv:"Intermediate"},
+  {t:"Node",c:"Blockchain Core",d:"A computer that participates in the blockchain network by maintaining a copy of the ledger, validating incoming transactions and blocks, and relaying valid data to other peers.",eg:"Ethereum has approximately 10,000 active full nodes worldwide, each independently verifying every transaction and smart contract execution.",lv:"Foundational"},
+  {t:"Smart Contract",c:"Blockchain Core",d:"Self-executing code deployed on a blockchain that automatically enforces the terms of an agreement when predefined conditions are met — without any intermediary or trusted third party.",eg:"A DeFi lending protocol's smart contract automatically liquidates a borrower's collateral when its value drops below the liquidation threshold, with no human intervention needed.",lv:"Foundational"},
+  {t:"Gas",c:"Blockchain Core",d:"The unit measuring computational work required to execute operations on Ethereum. Gas fees are paid to validators as compensation. EIP-1559 introduced a base fee that is burned plus an optional priority tip.",eg:"A simple ETH transfer requires exactly 21,000 gas. A complex DeFi swap involving multiple contracts may require 200,000–400,000 gas.",lv:"Intermediate"},
+  {t:"EVM",c:"Blockchain Core",d:"Ethereum Virtual Machine — the sandboxed, Turing-complete runtime environment that executes smart contract bytecode identically on every Ethereum node, guaranteeing deterministic outcomes.",eg:"BNB Smart Chain and Polygon are EVM-compatible, meaning Solidity contracts written for Ethereum can be deployed on these chains with minimal or no code changes.",lv:"Intermediate"},
+  {t:"Fork",c:"Blockchain Core",d:"A change to the blockchain's protocol rules. Soft forks are backward-compatible; hard forks are not and create a permanent chain split if a significant portion of the network does not upgrade.",eg:"Bitcoin Cash was created via a hard fork from Bitcoin in August 2017 after the community could not agree on a block size increase.",lv:"Intermediate"},
+  {t:"Mempool",c:"Blockchain Core",d:"The memory pool of pending transactions that have been broadcast to the network but not yet included in a confirmed block. Validators select transactions from the mempool, typically prioritising those with higher fees.",eg:"During the NFT minting frenzies of 2021, Ethereum's mempool regularly held over 100,000 pending transactions, causing base fees to spike dramatically.",lv:"Intermediate"},
+  {t:"Proof of Work",c:"Consensus",d:"A consensus mechanism where miners compete to solve a computationally difficult cryptographic puzzle. The first to solve it earns the right to add the next block and receives the block reward plus transaction fees.",eg:"Bitcoin uses PoW with the SHA-256 algorithm. The difficulty adjusts every 2,016 blocks to maintain an average block time of 10 minutes.",lv:"Foundational"},
+  {t:"Proof of Stake",c:"Consensus",d:"A consensus mechanism where validators lock up cryptocurrency as collateral to gain the right to propose and attest to blocks. Selected proportionally by stake size, with slashing penalties for misbehaviour.",eg:"Ethereum completed its transition from PoW to PoS in 'The Merge' in September 2022. Validators must stake a minimum of 32 ETH to participate directly.",lv:"Foundational"},
+  {t:"Delegated PoS",c:"Consensus",d:"A variant of Proof of Stake where token holders vote to elect a fixed number of delegate validators who produce blocks on behalf of the network. Offers high throughput but at the cost of greater centralisation.",eg:"BNB Chain uses Proof of Staked Authority with 21 elected validators. EOS operates with 21 block producers elected by EOS token holders.",lv:"Intermediate"},
+  {t:"BFT / PBFT",c:"Consensus",d:"Byzantine Fault Tolerance — a property ensuring a distributed system continues to reach correct consensus even when up to one-third of its nodes act maliciously or fail. PBFT is a classic algorithm implementing this.",eg:"Cosmos SDK blockchains use Tendermint BFT consensus, which provides instant, deterministic finality after each block.",lv:"Advanced"},
+  {t:"Finality",c:"Consensus",d:"The guarantee that a confirmed transaction cannot be reversed or altered. Probabilistic finality (PoW) strengthens with each subsequent block; deterministic finality (BFT) is achieved immediately after block confirmation.",eg:"Bitcoin achieves practical finality after 6 confirmations (~60 min). Ethereum PoS achieves economic finality in approximately 15 minutes.",lv:"Intermediate"},
+  {t:"DeFi",c:"DeFi",d:"Decentralised Finance — an ecosystem of financial applications built on public blockchains that replicate or reinvent financial services such as lending, trading, insurance, and derivatives without centralised intermediaries.",eg:"Uniswap, Aave, Compound, and MakerDAO collectively hold billions of dollars in TVL and enable permissionless access to financial services.",lv:"Foundational"},
+  {t:"AMM",c:"DeFi",d:"Automated Market Maker — a decentralised exchange mechanism using smart contract liquidity pools and a mathematical pricing formula (most commonly x·y=k) to price assets without a traditional order book.",eg:"Uniswap v2 pioneered the constant-product AMM model. PancakeSwap on BNB Chain processes billions in monthly trading volume.",lv:"Intermediate"},
+  {t:"Liquidity Pool",c:"DeFi",d:"A smart contract holding paired token reserves deposited by liquidity providers. Traders swap against the pool's reserves and LPs earn a proportional share of all trading fees generated.",eg:"The USDC/ETH pool on Uniswap v3 concentrates liquidity in user-defined price ranges, earning LPs higher fee returns but requiring more active management.",lv:"Intermediate"},
+  {t:"Yield Farming",c:"DeFi",d:"The strategy of deploying capital across multiple DeFi protocols simultaneously to maximise total returns, capturing trading fees, governance token emissions, interest income, and liquidity mining incentives.",eg:"During DeFi Summer 2020, Compound's COMP token distribution launched yield farming as a mainstream activity, with some pools offering over 1,000% APY at peak.",lv:"Intermediate"},
+  {t:"Flash Loan",c:"DeFi",d:"An uncollateralised loan that is borrowed and must be repaid within the same Ethereum transaction block. If repayment fails, the entire transaction — including the loan — is reverted atomically.",eg:"Flash loans enable zero-risk arbitrage across DEXes within one transaction. They have also been exploited in attacks like the $182M Beanstalk governance exploit in 2022.",lv:"Advanced"},
+  {t:"TVL",c:"DeFi",d:"Total Value Locked — the aggregate market value of all crypto assets deposited across a DeFi protocol's smart contracts. The primary metric for measuring the scale and user trust of a DeFi protocol.",eg:"At the peak of the 2021 DeFi boom, Ethereum protocols collectively held over $100 billion in TVL. DeFi Llama tracks TVL in real time across 150+ blockchains.",lv:"Foundational"},
+  {t:"Stablecoin",c:"DeFi",d:"A cryptocurrency designed to maintain a stable value relative to a reference asset, most commonly the US Dollar. Three main models: fiat-backed (USDT, USDC), crypto-overcollateralised (DAI), and algorithmic.",eg:"USDT from Tether is the world's most traded crypto asset by volume. Algorithmic stablecoins like Terra's UST collapsed in May 2022, wiping out $40 billion.",lv:"Foundational"},
+  {t:"Impermanent Loss",c:"DeFi",d:"The unrealised opportunity cost experienced by liquidity providers when the market price ratio of their deposited token pair diverges from the ratio at the time of deposit. The loss is only crystallised upon withdrawal.",eg:"An LP depositing equal value of ETH and USDC who experiences ETH doubling in price will withdraw approximately 5.7% less total value than simply holding both assets separately.",lv:"Intermediate"},
+  {t:"NFT",c:"NFT & Web3",d:"Non-Fungible Token — a cryptographically unique, indivisible token stored on a blockchain representing verifiable ownership of a specific digital or physical item. Each NFT is distinguishable from every other token.",eg:"CryptoPunks (ERC-721) pioneered the NFT concept in 2017. Bored Ape Yacht Club NFTs later sold for millions of dollars each and granted holders exclusive community membership.",lv:"Foundational"},
+  {t:"ERC-721",c:"NFT & Web3",d:"The Ethereum token standard that defines the smart contract interface for non-fungible tokens. Specifies functions including ownerOf, transferFrom, and tokenURI, enabling all NFT marketplaces and wallets to interpret tokens consistently.",eg:"OpenSea, Blur, and every major NFT marketplace are built around ERC-721. BNB Chain's equivalent standard is BEP-721.",lv:"Intermediate"},
+  {t:"ERC-1155",c:"NFT & Web3",d:"A multi-token standard enabling a single smart contract to manage multiple token types simultaneously — both fungible and non-fungible — with batch transfer capabilities that significantly reduce gas costs.",eg:"Enjin pioneered ERC-1155 for blockchain gaming, allowing a single contract to represent both unique legendary swords (non-fungible) and stackable healing potions (fungible).",lv:"Intermediate"},
+  {t:"Metaverse",c:"NFT & Web3",d:"A vision of persistent, shared, interconnected virtual worlds where users can interact, create, own digital assets, and transact using blockchain-verified ownership.",eg:"Decentraland and The Sandbox sell virtual land parcels as NFTs. The Sandbox sold land plots for over $4M each at peak, though active user counts remain modest.",lv:"Intermediate"},
+  {t:"DAO",c:"NFT & Web3",d:"Decentralised Autonomous Organisation — an entity whose governance rules and treasury management are encoded in transparent smart contracts, with decisions made through token-holder voting without centralised leadership.",eg:"Uniswap's governance is managed through its UNI token DAO, which votes on fee parameters, treasury grants, and protocol upgrades.",lv:"Intermediate"},
+  {t:"Web3",c:"NFT & Web3",d:"A vision for the next generation of the internet built on decentralised blockchain infrastructure, where users own their identity, data, and digital assets rather than ceding control to platform intermediaries.",eg:"MetaMask's browser extension, ENS domain names, Lens Protocol for decentralised social media, and on-chain identity systems are practical Web3 primitives already in use.",lv:"Foundational"},
+  {t:"IPFS",c:"NFT & Web3",d:"InterPlanetary File System — a peer-to-peer content-addressed storage protocol where files are retrieved by their cryptographic hash rather than server location. Provides censorship-resistant, decentralised file hosting.",eg:"The vast majority of NFT metadata and images are stored on IPFS. The NFT smart contract stores the IPFS CID, which points permanently to the asset regardless of server uptime.",lv:"Intermediate"},
+  {t:"ERC-20",c:"Tokens & Assets",d:"The foundational Ethereum fungible token standard defining a common interface — including transfer, approve, and allowance functions — that enables any compliant token to work seamlessly with all wallets, DEXes, and DeFi protocols.",eg:"USDT, USDC, LINK, UNI, and thousands of other tokens are ERC-20. BNB Chain's equivalent is BEP-20.",lv:"Foundational"},
+  {t:"Tokenomics",c:"Tokens & Assets",d:"The complete economic design of a cryptocurrency or token: total supply cap, circulating supply, emission schedule, vesting and lockup periods, burn mechanisms, token utility, and incentive structures for all stakeholders.",eg:"BNB uses auto-burn each quarter based on BNB price and block count, targeting a terminal supply of 100 million BNB — creating predictable deflationary pressure over time.",lv:"Intermediate"},
+  {t:"Wrapped Token",c:"Tokens & Assets",d:"A representation of an asset from one blockchain, issued as a token on a different blockchain. The original asset is locked in a custodial or smart contract vault, and the equivalent wrapped token is minted on the destination chain.",eg:"WBTC (Wrapped Bitcoin) is an ERC-20 token backed 1:1 by real Bitcoin held in institutional custody, enabling BTC holders to participate in Ethereum DeFi.",lv:"Intermediate"},
+  {t:"Governance Token",c:"Tokens & Assets",d:"A cryptocurrency that confers voting rights over a protocol's parameters, upgrades, treasury allocation, and strategic direction. The primary mechanism through which DAOs make collective decisions on-chain.",eg:"UNI holders vote on Uniswap protocol upgrades. AAVE token holders govern the Aave lending protocol's risk parameters, asset listings, and reserve factor settings.",lv:"Intermediate"},
+  {t:"Utility Token",c:"Tokens & Assets",d:"A token that grants access to a specific product, service, or benefit within a defined ecosystem. Distinct from security tokens (representing ownership) and governance tokens (conferring voting rights).",eg:"BNB provides discounted trading fees on Binance, access to Launchpad token sales, and payment for BNB Chain transaction gas — making it a multi-function utility token.",lv:"Foundational"},
+  {t:"Altcoin",c:"Tokens & Assets",d:"Any cryptocurrency other than Bitcoin. The category ranges from established major assets with high liquidity (ETH, BNB, SOL) to long-tail speculative tokens with minimal liquidity and unproven utility.",eg:"The 'altcoin season' narrative describes periods when altcoins broadly outperform Bitcoin, often occurring during bull markets when speculative appetite is highest.",lv:"Foundational"},
+  {t:"Private Key",c:"Wallets & Security",d:"A 256-bit random number from which a corresponding public key and wallet address are mathematically derived. It is the only credential required to authorise transactions — possession of the private key equals ownership of the funds.",eg:"'Not your keys, not your coins.' Losing or disclosing your private key is irreversible and results in permanent loss of all funds in the corresponding wallet.",lv:"Foundational"},
+  {t:"Seed Phrase",c:"Wallets & Security",d:"A human-readable encoding of a wallet's master private key as 12 or 24 words (BIP-39 standard). A seed phrase can deterministically regenerate the complete wallet — all keys and all addresses — across any compatible software.",eg:"MetaMask, Ledger Nano, Trezor, and Trust Wallet all use BIP-39 seed phrases. Anyone who obtains your seed phrase has complete and irrevocable access to your funds.",lv:"Foundational"},
+  {t:"Cold Wallet",c:"Wallets & Security",d:"A cryptocurrency wallet whose private keys are generated and stored on a device or medium that is never connected to the internet — hardware wallets, paper wallets, or air-gapped computers — providing maximum protection against remote attacks.",eg:"Ledger Nano X and Trezor Model T are leading hardware cold wallets. Major exchanges store the majority of customer assets in cold wallets.",lv:"Foundational"},
+  {t:"Hot Wallet",c:"Wallets & Security",d:"A cryptocurrency wallet that maintains an active internet connection — including exchange custodial wallets, browser extension wallets like MetaMask, and mobile wallet apps.",eg:"Exchanges keep 2–10% of assets in hot wallets to cover daily withdrawal demand. The remainder is in cold storage. Hot wallets are the primary target of exchange hacks.",lv:"Foundational"},
+  {t:"51% Attack",c:"Wallets & Security",d:"An attack where a single entity or coalition gains majority control (>50%) of a blockchain's consensus mechanism, enabling them to reorder transactions, double-spend coins, and exclude new transactions from confirmation.",eg:"Bitcoin Gold and Ethereum Classic both suffered successful 51% attacks. Bitcoin's hash rate is so large that mounting such an attack would cost billions of dollars.",lv:"Intermediate"},
+  {t:"Multi-Sig",c:"Wallets & Security",d:"A wallet security configuration requiring M signatures from a set of N authorised keys to approve any transaction (e.g. 3-of-5). Eliminates single points of failure for treasury and custody management.",eg:"Gnosis Safe is the most widely adopted multi-sig smart contract wallet, managing billions in DAO treasuries. Major exchanges use multi-sig for cold storage authorisation.",lv:"Intermediate"},
+  {t:"CEX",c:"Exchange & Trading",d:"Centralised Exchange — a trading platform operated by a company that acts as custodian of user funds, matches orders via an internal engine, and provides fiat on/off ramps, customer support, and regulatory compliance.",eg:"Binance, Coinbase, Kraken, and OKX are the leading global CEXes by volume, collectively processing hundreds of billions of dollars in daily trading volume.",lv:"Foundational"},
+  {t:"DEX",c:"Exchange & Trading",d:"Decentralised Exchange — a peer-to-peer protocol enabling users to trade directly from their own wallets via smart contracts, without depositing funds on a centralised platform or surrendering custody of their assets.",eg:"Uniswap on Ethereum and PancakeSwap on BNB Chain are the leading DEXes. They cannot freeze user funds, require no KYC, and are accessible to anyone globally.",lv:"Foundational"},
+  {t:"Order Book",c:"Exchange & Trading",d:"A real-time, dynamically updated list of all outstanding limit buy orders (bids) and sell orders (asks) at various price levels. Price discovery occurs continuously as new orders are placed and filled.",eg:"Binance's BTC/USDT spot order book typically shows millions of dollars of orders within 0.1% of the current price on both the bid and ask sides.",lv:"Foundational"},
+  {t:"Slippage",c:"Exchange & Trading",d:"The difference between the price at which a trade is expected to execute and the actual price received upon execution, arising from order book depth limitations or rapid price movement during the trade.",eg:"A $50,000 market buy of a small-cap token on a DEX with only $200,000 in the liquidity pool might result in an average execution price 15–20% above the initial quote.",lv:"Intermediate"},
+  {t:"Funding Rate",c:"Exchange & Trading",d:"A periodic payment mechanism in perpetual futures markets that transfers payments between long and short position holders to keep the perpetual contract price anchored near the spot price of the underlying asset.",eg:"During peak Bitcoin bull market sentiment, funding rates on Binance Futures have reached 0.1% per 8-hour interval — equivalent to 109% annualised — making long positions very expensive to hold.",lv:"Intermediate"},
+  {t:"Perpetual Futures",c:"Exchange & Trading",d:"A derivative instrument that functions like a traditional futures contract but has no expiry date. Position holders pay or receive funding rates periodically to keep the contract price aligned with spot.",eg:"Binance Futures BTC/USDT perpetual contract offers up to 125× leverage and consistently ranks as the world's highest-volume crypto derivatives market.",lv:"Intermediate"},
+  {t:"Layer 2",c:"Layer 2 & Scaling",d:"A network or protocol built directly on top of an existing Layer 1 blockchain that processes transactions off-chain to increase throughput and reduce fees, while periodically settling and inheriting security from the L1.",eg:"Arbitrum and Optimism are the two leading Ethereum Layer 2 networks, offering 10–100× lower fees than Ethereum mainnet.",lv:"Intermediate"},
+  {t:"Rollup",c:"Layer 2 & Scaling",d:"A Layer 2 scaling architecture that batches and executes many transactions off-chain, then posts compressed transaction data or validity proofs to Layer 1. Optimistic Rollups use fraud proofs; ZK-Rollups use cryptographic validity proofs.",eg:"Arbitrum (Optimistic) and zkSync (ZK) are leading implementations. Both reduce Ethereum gas costs by 10–100× for end users.",lv:"Advanced"},
+  {t:"ZK-Proof",c:"Layer 2 & Scaling",d:"Zero-Knowledge Proof — a cryptographic protocol allowing one party to convincingly demonstrate knowledge of a fact to another party without revealing any of the underlying private information.",eg:"Zcash uses ZK-SNARKs to enable fully private transactions where amounts and participants are hidden. ZK-Rollups use ZK-STARKs or SNARKs to prove correct off-chain execution to Ethereum.",lv:"Advanced"},
+  {t:"Cross-chain Bridge",c:"Layer 2 & Scaling",d:"An infrastructure protocol enabling the transfer of assets and arbitrary data between two separate and otherwise incompatible blockchain networks by locking assets on one chain and minting equivalents on another.",eg:"Bridge security remains a critical vulnerability — cross-chain bridges suffered approximately $2 billion in hacks in 2022, including the $625M Ronin Network and $320M Wormhole exploits.",lv:"Intermediate"},
+  {t:"Sharding",c:"Layer 2 & Scaling",d:"A horizontal database partitioning technique applied to blockchains, splitting the network into parallel sub-chains that each process a subset of total transactions simultaneously, dramatically increasing overall throughput.",eg:"Ethereum's scaling roadmap includes danksharding with EIP-4844 as the first step. Zilliqa launched the first production blockchain with mainnet transaction sharding.",lv:"Advanced"},
+  // CEX
+  {t:"Spot Trading",c:"CEX Trading",d:"The purchase or sale of a financial asset for immediate delivery and settlement at the current market price. The buyer receives the actual asset; the seller receives the agreed cash or stablecoin equivalent.",eg:"Buying 0.1 BTC on Binance at the current market price is a spot trade. The BTC appears in your exchange account immediately and you bear the full market risk from that point.",lv:"Foundational"},
+  {t:"Market Order",c:"CEX Trading",d:"A trading instruction to buy or sell an asset immediately at the best available price in the current order book. Execution speed is guaranteed but the exact fill price is not, introducing slippage risk in low-liquidity markets.",eg:"Placing a market buy for 1 ETH fills instantly against the cheapest available sell orders in the order book, regardless of whether the price is exactly as displayed at submission.",lv:"Foundational"},
+  {t:"Limit Order",c:"CEX Trading",d:"A trading instruction to buy or sell an asset only at a specific price or better. The order is placed in the order book and waits until either a matching counterparty order arrives or the order is cancelled.",eg:"Setting a limit buy for BTC at $60,000 when the current price is $65,000 means your order sits in the order book and executes automatically if the price falls to $60,000.",lv:"Foundational"},
+  {t:"Stop-Loss Order",c:"CEX Trading",d:"A conditional order that automatically converts to a market order and executes immediately when the asset's price reaches a predefined trigger level, limiting losses on an open position without requiring continuous monitoring.",eg:"A trader holding ETH at $3,000 places a stop-loss at $2,600. If ETH falls to $2,600, the exchange immediately submits a market sell order to cap the loss at ~13%.",lv:"Intermediate"},
+  {t:"Take-Profit Order",c:"CEX Trading",d:"A conditional order that automatically closes a position at a predetermined profit target price, locking in gains without requiring the trader to monitor markets continuously.",eg:"After buying BTC at $70,000, setting a take-profit at $84,000 means the position automatically closes at a 20% gain without any further action.",lv:"Intermediate"},
+  {t:"Bid-Ask Spread",c:"CEX Trading",d:"The difference between the highest price any buyer is currently willing to pay (bid) and the lowest price any seller is willing to accept (ask). The spread is the primary measure of market liquidity and market maker efficiency.",eg:"Binance's BTC/USDT pair typically has a spread of $1–2 on a $70,000 price — just 0.001–0.003% — reflecting extremely deep liquidity.",lv:"Foundational"},
+  {t:"VWAP",c:"CEX Trading",d:"Volume-Weighted Average Price — the average execution price of all trades in a given period, weighted by volume at each price level. Used by institutional traders as a benchmark to evaluate whether their trades executed efficiently.",eg:"An institutional trader buying $100M of BTC over a day uses VWAP as their benchmark. Executing at or below VWAP demonstrates they did not move the market adversely.",lv:"Advanced"},
+  {t:"Order Book Depth",c:"CEX Trading",d:"A real-time visualisation of all outstanding limit orders at price levels above (asks) and below (bids) the current market price, showing the total volume available at each level.",eg:"A depth chart showing $10M of bids within 0.5% of the current BTC price indicates the market can absorb significant selling pressure without a dramatic price decline.",lv:"Intermediate"},
+  {t:"Candlestick Chart",c:"CEX Trading",d:"A financial chart type displaying four data points for each time period — open, high, low, and close (OHLC). The solid body shows the open-to-close range; wicks extend to the period's high and low.",eg:"A green candle with a long lower wick on the daily BTC chart suggests strong buying pressure reversed an intraday price drop — interpreted as a bullish signal.",lv:"Foundational"},
+  {t:"Trailing Stop",c:"CEX Trading",d:"A dynamic stop-loss order that automatically adjusts its trigger price as the market moves in the trader's favour, locking in progressively more profit while still providing downside protection.",eg:"A 5% trailing stop on a long BTC position at $70,000 sets an initial stop at $66,500. If BTC rises to $80,000, the stop automatically moves up to $76,000.",lv:"Intermediate"},
+  {t:"Market Maker",c:"CEX Market",d:"A firm or individual that continuously quotes simultaneous buy and sell prices for one or more assets, profiting from the bid-ask spread. Market makers are essential to exchange liquidity and often operate under formal agreements.",eg:"Jump Trading, Wintermute, and GSR are major crypto market makers. They submit thousands of limit orders per second across multiple exchanges.",lv:"Intermediate"},
+  {t:"Market Taker",c:"CEX Market",d:"A trader who removes liquidity from the order book by submitting orders that execute immediately against existing limit orders. Takers pay higher fees as they consume rather than provide liquidity.",eg:"Any market order placed on Binance makes the user a taker. Standard Binance taker fees are 0.10%, reduced to as low as 0.01% for VIP tiers.",lv:"Foundational"},
+  {t:"Price Discovery",c:"CEX Market",d:"The continuous market process of determining the current fair price of an asset through the real-time interaction of buyers and sellers. CEX order books are the primary price discovery mechanism for most cryptocurrency assets.",eg:"Within seconds of major macroeconomic news, traders on Binance update their limit orders, rapidly incorporating new information into Bitcoin's displayed price.",lv:"Intermediate"},
+  {t:"Wash Trading",c:"CEX Market",d:"The illegal practice of buying and selling the same asset repeatedly between related accounts to generate artificial trading volume, creating a false impression of market activity to attract genuine traders.",eg:"Research has found that some smaller CEXes fabricate 70–90% of their reported trading volume through wash trading to appear more significant than they are.",lv:"Advanced"},
+  {t:"Circuit Breaker",c:"CEX Market",d:"An automated market mechanism that temporarily halts or restricts trading when prices move beyond a predefined threshold within a short time window, preventing cascade liquidations.",eg:"Binance Futures has circuit breakers that activate when BTC price moves more than 10% in 5 minutes, pausing new order submission briefly.",lv:"Advanced"},
+  {t:"Trading Pairs",c:"CEX Market",d:"The two assets that define a trading market — a base asset being bought or sold and a quote asset used as the pricing currency. All prices on a CEX are relative to a quote asset.",eg:"In the BTC/USDT pair, Bitcoin is the base asset and Tether is the quote asset. A price of $70,000 means one BTC costs 70,000 USDT.",lv:"Foundational"},
+  {t:"Liquidity",c:"CEX Market",d:"The degree to which an asset can be bought or sold quickly in large quantities at stable prices with minimal price impact. High liquidity indicates a deep order book with many active buyers and sellers.",eg:"Bitcoin on Binance is extremely liquid — a $10M market order might move the price by less than 0.1%. The same order on a low-cap altcoin could move the price 20–50%.",lv:"Foundational"},
+  {t:"Leverage",c:"CEX Risk",d:"The use of borrowed funds to open a trading position larger than the trader's own capital would allow, amplifying both potential gains and potential losses by the leverage multiplier.",eg:"Using 20× leverage with $1,000 of margin controls a $20,000 position. A 5% adverse price move results in a 100% loss of the deposited margin and triggers liquidation.",lv:"Foundational"},
+  {t:"Margin",c:"CEX Risk",d:"The collateral deposited by a trader to open and maintain a leveraged position. Initial margin is required to open the position; maintenance margin is the minimum equity required to keep it open before liquidation is triggered.",eg:"Opening a $100,000 BTC futures position at 10× leverage requires $10,000 in initial margin. If losses erode equity below the maintenance margin (~0.5%), the exchange liquidates.",lv:"Intermediate"},
+  {t:"Liquidation",c:"CEX Risk",d:"The forced closure of a leveraged trading position by the exchange when the trader's margin balance falls below the maintenance margin threshold, preventing the account balance from going negative at the exchange's expense.",eg:"A trader long 50× BTC with $2,000 margin faces liquidation if BTC falls just 1.98% from their entry. The exchange closes the position automatically.",lv:"Intermediate"},
+  {t:"Insurance Fund",c:"CEX Risk",d:"A reserve pool of assets maintained by a derivatives exchange to absorb losses from liquidated positions that were not fully covered by the trader's margin — preventing these losses from being socialised to profitable traders.",eg:"Binance Futures' USDT insurance fund holds hundreds of millions of dollars. When a liquidated position results in a larger loss than the margin, the insurance fund covers the deficit.",lv:"Advanced"},
+  {t:"ADL (Auto-Deleveraging)",c:"CEX Risk",d:"Auto-Deleveraging — a last-resort mechanism activated when the insurance fund is depleted, where the exchange automatically reduces or closes profitable positions of highly leveraged traders to cover losses.",eg:"ADL is only triggered in extreme market conditions. Traders with the highest combination of profit percentage and leverage are most at risk of having positions reduced.",lv:"Advanced"},
+  {t:"Counterparty Risk",c:"CEX Risk",d:"The risk that the other party in a financial arrangement — in the context of a CEX, the exchange itself — will fail to fulfil its obligations, most catastrophically by losing or misappropriating customer funds.",eg:"FTX's November 2022 collapse demonstrated catastrophic CEX counterparty risk: $8 billion in customer funds were used by the exchange without customer consent.",lv:"Advanced"},
+  {t:"Position Limit",c:"CEX Risk",d:"The maximum allowed size of a single trading position or aggregate exposure that any account can hold in a particular instrument or market, set to prevent dangerous concentration of risk.",eg:"Binance imposes tiered position limits on futures markets — retail accounts face tighter limits than institutional accounts.",lv:"Intermediate"},
+  {t:"KYC",c:"CEX Compliance",d:"Know Your Customer — the mandatory regulatory process of verifying the identity of customers before allowing access to financial services. Typically involves government-issued ID verification, proof of address, and sometimes source of wealth documentation.",eg:"Binance's tiered KYC: Basic for limited access, Standard (government ID + facial recognition) for full trading and $8M daily withdrawal limits.",lv:"Foundational"},
+  {t:"AML",c:"CEX Compliance",d:"Anti-Money Laundering — the framework of laws, regulations, monitoring systems, and procedures that financial institutions must implement to detect, prevent, and report transactions that may constitute money laundering.",eg:"CEX AML teams monitor for red flags: transactions just below reporting thresholds, rapid cycling between assets, unusual geographic sending patterns.",lv:"Foundational"},
+  {t:"FATF Travel Rule",c:"CEX Compliance",d:"A Financial Action Task Force requirement mandating that Virtual Asset Service Providers share originator and beneficiary information when transferring more than a specified threshold value between institutions.",eg:"When Binance sends 1 ETH to a Coinbase user, the Travel Rule requires Binance to transmit the sender's verified name, account number, and address to Coinbase.",lv:"Advanced"},
+  {t:"Proof of Reserves",c:"CEX Compliance",d:"A cryptographic audit mechanism enabling a CEX to publicly demonstrate that its on-chain asset holdings exceed its total verified customer liabilities, without revealing individual account details.",eg:"Following FTX's collapse, Binance, Kraken, and OKX all published Merkle tree-based proof of reserves reports, allowing any user to verify their balance is included.",lv:"Intermediate"},
+  {t:"Sanctions Screening",c:"CEX Compliance",d:"The mandatory process of checking all customers and transactions against government-published lists of sanctioned individuals, entities, and jurisdictions to prevent regulated financial services from being used by prohibited parties.",eg:"CEXes screen against OFAC's SDN list in real time. When the US Treasury sanctioned Tornado Cash wallet addresses in 2022, all major CEXes immediately blocked associated deposits.",lv:"Advanced"},
+  {t:"SAR",c:"CEX Compliance",d:"Suspicious Activity Report — a mandatory report filed by regulated financial institutions when they detect transactions or behaviour that suggests potential financial crime, without alerting the subject.",eg:"A CEX compliance analyst files a SAR when a newly verified account receives $9,000 in multiple rapid deposits — a textbook structuring pattern to avoid the $10,000 CTR threshold.",lv:"Advanced"},
+  {t:"VASP",c:"CEX Compliance",d:"Virtual Asset Service Provider — the regulatory classification used by FATF and adopted by most global regulators for businesses that exchange, transfer, custody, or administer virtual assets on behalf of customers.",eg:"The EU's Markets in Crypto-Assets (MiCA) regulation, effective 2024, requires all VASPs operating in the EU to obtain a licence, maintain capital reserves, and comply with consumer protection rules.",lv:"Intermediate"},
+  {t:"MiCA",c:"CEX Compliance",d:"Markets in Crypto-Assets — the EU's comprehensive regulatory framework for crypto asset service providers, creating standardised licensing, capital requirements, consumer protection rules, and operational standards across all 27 EU member states.",eg:"MiCA requires CEXes operating in the EU to publish white papers for token offerings, maintain custody of client assets, and comply with strict AML and solvency requirements.",lv:"Advanced"},
+  {t:"Futures Trading",c:"CEX Products",d:"Derivative contracts that obligate the buyer to purchase and the seller to deliver an underlying asset at a predetermined price on a specified future date. CEX futures allow both hedging and leveraged speculation.",eg:"Binance Futures offers BTC quarterly contracts and perpetuals up to 125× leverage, making it the world's largest crypto derivatives exchange by open interest and volume.",lv:"Intermediate"},
+  {t:"Options Trading",c:"CEX Products",d:"Derivative contracts giving the buyer the right — but not the obligation — to buy (call option) or sell (put option) an underlying asset at a specified strike price before or on the expiry date.",eg:"Deribit dominates crypto options with over 90% market share. Options allow miners to hedge production income and traders to construct strategies with defined maximum loss.",lv:"Advanced"},
+  {t:"Staking Service",c:"CEX Products",d:"A CEX product enabling users to earn staking rewards on Proof-of-Stake assets without managing their own validator infrastructure. The exchange handles technical complexity and distributes rewards net of a platform commission.",eg:"Binance offers ETH staking with approximately 4% APY. The exchange pools customer ETH, runs the validators, and distributes daily staking rewards minus a 10% management fee.",lv:"Intermediate"},
+  {t:"Earn Products",c:"CEX Products",d:"A family of yield-generating CEX products — including flexible savings, fixed-term deposits, and structured dual-investment products — that allow users to earn yield on idle cryptocurrency holdings.",eg:"Binance Earn offers USDT flexible savings at 3–5% APY and BTC fixed deposits at higher rates. Dual investment products offer enhanced yields tied to specific price outcomes.",lv:"Intermediate"},
+  {t:"IEO / Launchpad",c:"CEX Products",d:"Initial Exchange Offering — a fundraising mechanism where a CEX vets and hosts token sales for new cryptocurrency projects, providing the project with immediate access to the exchange's user base.",eg:"Binance Launchpad has hosted dozens of IEOs including Axie Infinity (AXS) and The Sandbox (SAND), often generating 10–100× returns for early participants.",lv:"Intermediate"},
+  {t:"OTC Desk",c:"CEX Products",d:"An over-the-counter trading service for institutional clients and high-net-worth individuals requiring execution of large block transactions at negotiated prices, without revealing the order to the public market.",eg:"Binance OTC handles transactions typically above $10,000–$50,000 minimum. Institutional clients receive competitive quotes and settle large trades without any order book exposure.",lv:"Advanced"},
+  {t:"Copy Trading",c:"CEX Products",d:"A social trading feature allowing users to automatically mirror the trading positions of selected experienced traders in real time and proportionally to their own account size, democratising access to active trading strategies.",eg:"Binance Copy Trading displays lead traders' historical PnL, maximum drawdown, win rates, and risk ratings. Followers automatically replicate every trade the lead trader executes.",lv:"Intermediate"},
+  {t:"Cold Storage",c:"CEX Custody",d:"The institutional practice of storing the vast majority of customer cryptocurrency assets in hardware security modules or air-gapped systems permanently disconnected from the internet.",eg:"Major CEXes store 90–98% of customer assets in cold storage. Access typically requires multiple authorised senior staff (multi-sig), physical presence, and multi-layer authentication.",lv:"Foundational"},
+  {t:"Hot Wallet Management",c:"CEX Custody",d:"The operational practice of managing an exchange's internet-connected wallets that process real-time customer withdrawals and deposits, balancing liquidity availability against the heightened security risk of internet connectivity.",eg:"Exchanges maintain hot wallets holding 2–5% of total customer assets to cover expected daily withdrawal volume, automatically replenishing from cold storage when balances fall below thresholds.",lv:"Intermediate"},
+  {t:"MPC Custody",c:"CEX Custody",d:"Multi-Party Computation custody — a cryptographic approach where private key operations are distributed across multiple independent parties, so no single party ever holds a complete key.",eg:"Fireblocks and Copper use MPC custody for institutional clients including major CEXes. MPC eliminates the single-point-of-failure risk of traditional key management.",lv:"Advanced"},
+  {t:"Settlement",c:"CEX Custody",d:"The final, irrevocable transfer of asset ownership between buyer and seller to complete a trade. On a CEX, settlement occurs instantly within the exchange's internal ledger since both parties hold accounts at the same custodial institution.",eg:"Unlike traditional securities requiring T+2 business day settlement, CEX spot trades settle in milliseconds within the exchange's internal accounting system.",lv:"Intermediate"},
+  {t:"Proof of Solvency",c:"CEX Custody",d:"Cryptographic and actuarial evidence demonstrating that a CEX's verified, audited asset holdings on-chain are sufficient to cover 100% of its total verified customer liabilities — proving the exchange operates on a fully reserved basis.",eg:"Kraken's proof of solvency methodology uses Merkle tree commitments to allow any user to verify their account balance is included in the aggregate liability figure.",lv:"Intermediate"},
+];
+
+const PRINCIPLES = [
+  // ── UX & Usability ──
+  {p:"Progressive Disclosure over Feature Gatekeeping",st:"Surface complexity through user-initiated exploration, never forced segmentation at registration.",c:"UX & Usability",d:"intermediate",rationale:"Safe defaults for novice users (market orders only, no leverage), opt-in complexity via persistent mode memory, and contextual education triggered precisely when a user first encounters an advanced feature. Never gate features — gate their discoverability. A user who can progress at their own pace learns faster and churns less than one who feels patronised or overwhelmed.",implication:"The simple/pro toggle is table stakes. Differentiate by designing adaptive UI that learns individual user behaviour and adjusts the exposed surface area over time.",tags:["Progressive Complexity","Mode Switching","Adaptive UI"]},
+  {p:"Transparency-Simplicity Tradeoff in Transaction UI",st:"Show the minimum a user needs to act confidently. Reveal technical depth only when they ask for it.",c:"UX & Usability",d:"intermediate",rationale:"A transaction confirmation screen should default to total cost in fiat, estimated time, and a plain-language description of what the transaction does. Advanced details — gwei, gas limit, nonce — belong behind an explicit toggle. Use traffic-light colouring for congestion levels and offer 'fast / standard / slow' presets. The goal is confident action, not complete technical disclosure.",implication:"The MetaMask Activity Tab redesign and EIP-1559's dual-fee complexity are the canonical examples of getting this balance wrong. Study both.",tags:["Information Architecture","Cognitive Load","Trust Signals"]},
+  {p:"Prevent-First Design for Irreversible Actions",st:"Irreversibility demands a shift from undo culture to prevent-first. Slow the user in proportion to the stakes.",c:"UX & Usability",d:"advanced",rationale:"Address whitelisting with a 24-hour delay for new recipients, ENS domain resolution to minimise raw hex address entry, identicon visual fingerprinting, mandatory last-4-characters confirmation on high-value transfers, and graduated friction proportional to transaction value. The forcing function pattern: slowing a user down at the right moment is the most respectful decision you can make in a financial product.",implication:"Irreversibility affects every design decision in a crypto product. It is not a single screen problem — it is a design philosophy that must be embedded in the entire system.",tags:["Error Prevention","Friction Design","Irreversibility"]},
+  {p:"Risk-First Information Hierarchy",st:"In any financial dashboard, surface risk before reward. What could harm the user matters more than what pleases them.",c:"UX & Usability",d:"advanced",rationale:"A DeFi portfolio view should lead with total fiat net worth, then flag positions approaching liquidation, expiring options, or significant impermanent loss — before showing headline gains. Abstract chain identity entirely; users think in asset terms, not network terms. Design for the 3am exception state: what does the screen look like when a position is deeply underwater?",implication:"The most common portfolio dashboard failure is treating it as a data display problem rather than a decision-support interface. Every item should either inform a decision or directly enable an action.",tags:["Information Hierarchy","Cross-chain UX","Risk Communication"]},
+  {p:"Designing Across the Full Competency Spectrum",st:"A single platform must serve both the first-time buyer and the professional trader without compromising either experience.",c:"UX & Usability",d:"intermediate",rationale:"One entry point that reveals depth through user choice, not forced segmentation at registration. Safe defaults for novices, opt-in complexity, persistent mode memory, and contextual education at the moment of first encounter. Both Simple and Pro modes share the same order engine, account summary, and positions panel — only the control surface differs.",implication:"The failure mode is building two separate products instead of one coherent system. The test: can a user switch between modes and feel they are in the same product?",tags:["Persona Design","Progressive Complexity","Dual Persona"]},
+
+  // ── Strategy ──
+  {p:"Constraints-Led Design for Emerging Markets",st:"In resource-constrained environments, simplicity and reliability outperform feature parity.",c:"Strategy",d:"advanced",rationale:"For Web3 products targeting users with feature phones and limited data: design offline-first (cache balances, queue transactions), use SMS/USSD as fallback for critical confirmations, and model after M-Pesa's stripped-back approach. The real product problem is local fiat on-ramps, not blockchain complexity. Constraint stacks — low bandwidth, small screens, intermittent connectivity — must be mapped before any feature decisions are made.",implication:"Awareness of how crypto is actually adopted in Sub-Saharan Africa, Southeast Asia, and Latin America is not optional context — it is the product brief.",tags:["Emerging Markets","Offline-first","Constraints-led Design"]},
+  {p:"Liquidity-First Prioritisation for Multi-sided Markets",st:"In a DEX or exchange, liquidity providers are the supply side. Features that onboard LPs have a multiplier effect on all other user segments.",c:"Strategy",d:"intermediate",rationale:"Without sufficient liquidity, retail traders cannot execute trades at acceptable prices. LP onboarding features therefore unlock value for every other user type simultaneously. Use RICE scoring anchored to total trading volume rather than DAU — and maintain separate roadmaps per persona while aligning all three on shared infrastructure investments.",implication:"The liquidity bootstrapping cold-start problem is the most common product failure point for new DEXes launching without existing liquidity. Solve it first; everything else depends on it.",tags:["Prioritisation","RICE Framework","Multi-sided Platform"]},
+  {p:"Ideology to Value Proposition Translation",st:"Users do not pay for decentralisation. They pay for its outcomes: censorship resistance, permissionless access, self-custody, and composability.",c:"Strategy",d:"advanced",rationale:"The PM challenge is calibrating which outcome is most compelling for each specific user segment. A user in a financially restrictive country values censorship resistance and permissionless access above all else. A Western power user values composability. After FTX's collapse in November 2022, self-custody crossed from a crypto-native preference into a mainstream value proposition. Design and communicate for each segment's actual motivation.",implication:"Framing any Web3 product as 'decentralised' without translating that into a concrete user benefit is a positioning failure. Every stakeholder presentation should lead with the outcome, not the mechanism.",tags:["Value Proposition","Segmentation","Jobs-to-be-Done"]},
+  {p:"Community as Moat in Forkable Ecosystems",st:"In Web3, code is freely forkable. Your sustainable moat is community loyalty, liquidity depth, and compounding network effects — not the product itself.",c:"Strategy",d:"advanced",rationale:"Uniswap survived SushiSwap's 2020 vampire attack — which migrated $1B in liquidity overnight — through developer ecosystem grants and brand credibility. Competitive strategy shifts from 'ship features faster' to 'deepen ecosystem lock-in' through governance token utility, liquidity incentive structures, developer relations, and deep protocol integrations that resist replication.",implication:"The SushiSwap vampire attack is the canonical Web3 competitive strategy case study. Know it in detail: what happened, how Uniswap responded, and why the community chose to stay.",tags:["Competitive Strategy","Network Effects","Community Moat"]},
+  {p:"Two-Track Roadmapping Under Infrastructure Dependency",st:"Maintain parallel roadmap tracks — infrastructure-dependent and infrastructure-agnostic — so chain congestion never blocks team output.",c:"Strategy",d:"intermediate",rationale:"Infrastructure-dependent features (cheap, fast L1 required) and infrastructure-agnostic features (UX, analytics, education, notifications) should be explicitly tracked separately. When the chain is congested, ship aggressively from the second track. Architect for chain-agnosticism from day one, enabling migration or multi-chain deployment without a full rebuild. Budget at least 30% of sprint capacity for reactive work.",implication:"This is a maturity test for a product team. Roadmapping under unpredictable external dependencies is a defining challenge of building in Web3 — not an edge case.",tags:["Roadmapping","External Dependencies","Multi-chain Strategy"]},
+
+  // ── User Research ──
+  {p:"On-Chain Data as Behavioural Research Infrastructure",st:"In Web3, every transaction is public. On-chain data provides the behavioural research layer that no other industry has access to.",c:"User Research",d:"intermediate",rationale:"Triangulate across three sources: on-chain behavioural data (Dune Analytics dashboards reveal actual behaviour at scale without requiring user disclosure), community ethnography (Discord, governance forums, Twitter Spaces), and recruited qualitative interviews structured to respect pseudonymity (pay in crypto, require no real names). The combination gives both scale and depth unavailable in Web2.",implication:"On-chain behavioural data is the genuine unfair advantage Web3 product teams have over Web2 competitors. Platforms like Nansen, Chainalysis, and Dune exist to make this accessible. Not using them is leaving your most powerful research tool unused.",tags:["Research Methods","On-chain Analytics","Pseudonymity"]},
+  {p:"Separate Mental Models Require Separate Research",st:"Traditional banking users and crypto-native users have fundamentally incompatible mental models. Never combine them in a single research study.",c:"User Research",d:"foundational",rationale:"Traditional banking: reversible transactions, insured deposits, custodial accounts, trust-based relationships. Crypto-native: irreversible transactions, uninsured funds, self-custodial assets, trustless protocols. These map to completely different error expectations, risk tolerances, and feature priorities. A study that combines both personas produces unreliable, contradictory findings — and dangerous design decisions.",implication:"Mental model mapping is a specific named UX research technique. Be precise about the methods — card sorting, contextual inquiry, diary studies — you would use to surface each model before making any design decisions.",tags:["Mental Models","Persona Research","Segmentation"]},
+  {p:"Distinguish Abandonment from Technical Failure",st:"In Web3 funnels, user-initiated abandonment and on-chain execution failure look identical in surface analytics but require completely different product responses.",c:"User Research",d:"intermediate",rationale:"Layer three methods: funnel analytics to locate the drop-off, session replay to observe behaviour in the moments before, and exit interviews to surface the emotional cause. Augment with on-chain data: did the user sign in their wallet but the transaction failed on-chain? That is a gas estimation or contract error — not a trust failure at the confirmation screen. The cause determines the solution.",implication:"A product team that treats all funnel drop-off as 'abandonment' will build UX fixes for what are actually engineering problems, and vice versa. Always interrogate the cause before prescribing the fix.",tags:["Funnel Analysis","Session Replay","Exit Research"]},
+  {p:"Capital as Revealed Preference for Trust",st:"In Web3, how much capital a user deposits with a protocol is their most honest, at-risk expression of trust. Measure it accordingly.",c:"User Research",d:"advanced",rationale:"Trust in Web3 is multi-dimensional: security trust, reliability trust, regulatory trust, and brand trust. Each requires a different measurement approach. Wallet fund deposit size as revealed preference captures all four simultaneously — users vote with actual capital they are risking. Supplement with validated survey scales and track changes around key trust-impacting events: security audits, incidents, regulatory announcements.",implication:"Survey-only trust measurement is insufficient. If users say they trust a protocol but keep funds elsewhere, the survey is wrong. Behavioural data always outranks stated preference.",tags:["Trust Measurement","Revealed Preference","Survey Design"]},
+  {p:"Forked Mainnet Testing for Financial Product Research",st:"Usability testing on testnets introduces significant behavioural confounders. Use forked mainnet environments to approximate real-money behaviour without real-money risk.",c:"User Research",d:"intermediate",rationale:"Four challenges require deliberate design: (1) Testnet vs. mainnet behaviour — users act recklessly with test tokens and cautiously with real money. (2) Wallet setup overhead — pre-configure sessions. (3) Gas fee volatility — mock the estimate to isolate the feature. (4) Irreversibility risk — use Hardhat or Anvil forked mainnet environments for the highest possible fidelity without financial risk to participants.",implication:"Hardhat forked mainnet testing is a concrete, demonstrable skill. Mentioning it signals the technical depth that makes for genuinely credible qualitative research findings in a financial product context.",tags:["Usability Testing","Testnet","Research Validity"]},
+
+  // ── Design Systems ──
+  {p:"State-Aware Components for Asynchronous Finance",st:"Web3 UI components must model the full state machine, not just the happy path. 'Pending' and 'done' are not enough.",c:"Design Systems",d:"intermediate",rationale:"Build with four foundational pillars: (1) Price components with animated delta indicators and asset-specific decimal precision rules. (2) Transaction state machine with distinct visual treatments for pending, confirming, confirmed, failed, and reverted — with countdown timers. (3) A unified risk severity scale — informational, warning, critical, catastrophic — applied consistently across all touchpoints. (4) Skeleton loaders optimised for blockchain's variable async latency patterns.",implication:"Transaction states are the most systematically underdesigned component category in Web3 products. A complete state machine is a meaningful product differentiator. Ship one and it becomes immediately visible to technically literate users.",tags:["Component Design","State Management","Design Tokens"]},
+  {p:"Dark Mode as Primary Canvas for Financial Interfaces",st:"For trading products, dark mode is not a cosmetic option — it is the primary design canvas, requiring WCAG AA compliance and fatigue-aware colour choices.",c:"Design Systems",d:"foundational",rationale:"Critical decisions: reduce green and red saturation to prevent colour fatigue during multi-hour sessions; ensure contrast ratios meet WCAG AA for all price text; chart backgrounds should be subtly lighter than surrounding chrome; avoid pure #000 in favour of near-black tones which are easier on the eyes during extended use. Bloomberg Terminal has refined this for 40 years — study it.",implication:"A designer who cannot explain why they use #0d0d0f instead of #000000 for a trading interface background has not thought deeply about the use case they are designing for.",tags:["Dark Mode","Accessibility","Colour Systems"]},
+  {p:"Emotionally-Calibrated Empty States",st:"Each empty state carries a distinct emotional register. Never use the same component for an empty wallet, a failed transaction, and a protocol outage.",c:"Design Systems",d:"foundational",rationale:"An empty wallet is an opportunity (onboarding CTA). A failed transaction is frustration (explain why, provide a specific recovery path). A protocol outage is anxiety (status page link, estimated recovery, alternatives). Build a consistent structural template — illustration + headline + supporting copy + primary action — but differentiate tone, imagery, and action type to match each emotional context precisely.",implication:"Empty states are a product's moment of truth — the moment it most needs to be helpful. Most Web3 products abandon users with a generic error state. Treating each as a distinct design problem is immediately visible to users who have experienced poor alternatives.",tags:["Empty States","Error Design","Emotional Design"]},
+  {p:"Precision Matrix for Cryptocurrency Amount Display",st:"Displaying cryptocurrency amounts requires a per-asset precision matrix. '0.00000001 BTC' is a design failure, not an edge case.",c:"Design Systems",d:"advanced",rationale:"Define display rules per asset: BTC — 8 decimal places on-chain, display 4–6; ETH — 18 decimal places on-chain, display 4; USDC — 6 decimal places on-chain, display 2 like fiat. Contextual rules: amounts under $1 show additional precision; amounts over $1M use abbreviated format. Implement as a shared design token with a paired code formatting function — the single source of truth for both design and engineering.",implication:"This shared token + formatting function is the design-to-engineering handoff artifact that prevents the '0.00000001 BTC' problem from appearing in production. It exists in the space between Figma and code — which is precisely where most crypto product quality is lost.",tags:["Design Tokens","Numerics UX","Engineering Handoff"]},
+  {p:"Stakes-Proportionate Notification Architecture",st:"Not all alerts are equal. A liquidation warning and a weekly summary cannot share the same delivery channel or urgency treatment.",c:"Design Systems",d:"intermediate",rationale:"Three urgency tiers: Tier A (immediate action required — liquidation warnings, failed transactions) — always push, cannot be disabled. Tier B (time-sensitive — large price movements, governance votes closing) — user-configurable per-asset thresholds. Tier C (informational — weekly summaries, new features) — weekly digest only. Default users to Tier A. Most DeFi products send everything as push — a choice that destroys attention budgets and causes users to disable all notifications.",implication:"A missed liquidation warning push notification can directly cause a user to lose their entire collateral position. This is not a notification design problem — it is a genuine, preventable financial harm. Treat it with corresponding seriousness in every design review.",tags:["Notification Design","Urgency Matrix","User Preferences"]},
+
+  // ── Ethics & Trust ──
+  {p:"Fiduciary Design as a Standard",st:"Evaluate every design decision as if you bear legal responsibility for the financial outcome. This is the only standard consistent with operating in a high-stakes financial product.",c:"Ethics & Trust",d:"advanced",rationale:"Dark patterns — APY displayed without risk, hidden slippage caps, auto-enrolment in high-leverage products — drive churn and regulatory scrutiny, both existential risks for exchanges. Build a formal anti-pattern review step into design QA alongside standard visual and accessibility checks. Regulatory bodies including the SEC, FCA, and CFTC are actively investigating crypto dark patterns. Awareness of this is a professional minimum.",implication:"The long-term LTV argument against dark patterns is correct but insufficient on its own. The stronger argument is that financial design carries a duty of care — and that designing in a way that knowingly harms users is an ethical failure regardless of its commercial impact.",tags:["Dark Patterns","Ethics","Fiduciary Design"]},
+  {p:"Scenario-Based Risk Communication",st:"Dollar-denominated scenario framing dramatically outperforms percentage-based risk display for non-expert users. Show the loss, not the rate.",c:"Ethics & Trust",d:"intermediate",rationale:"'If Bitcoin falls 20%, your position will be automatically liquidated and you will lose the entire $450 you deposited' is far more comprehensible and actionable than 'Liquidation price: $X at 5× leverage.' Require explicit acknowledgement on first encounter with each high-risk feature type but avoid repetition that creates habituation. Progressive disclosure: default view shows 'Risk: High'; tapping reveals the specific dollar-denominated loss scenario.",implication:"The FCA's consumer research on retail risk comprehension consistently shows that scenario-based framing outperforms percentage-based display. This is an evidence-based design choice, not a stylistic preference.",tags:["Risk Communication","Plain Language","Consumer Protection"]},
+  {p:"Governance UI as Power Infrastructure",st:"Every governance interface decision — proposal framing, default vote state, voting friction — directly determines participation rates and therefore who wins.",c:"Ethics & Trust",d:"advanced",rationale:"Governance UI is a silent power broker. How proposals are framed, how impact is summarised, what the default vote is, and how much friction exists in voting all affect participation rates. Designers should: surface conflicts of interest, display estimated impact by wallet size cohort, reduce voting friction specifically for small holders who are currently and systematically underrepresented, and design proposal timelines that do not disadvantage global time zones.",implication:"The most impressive answers connect specific interface decisions — where the 'Vote' button is positioned, how long a proposal is surfaced before closing — to their downstream political and economic governance outcomes. This is systems thinking applied to democracy.",tags:["Governance Design","Power Dynamics","Systems Thinking"]},
+  {p:"KYC as Capability Unlock, Not Compliance Gate",st:"Frame identity verification as the mechanism that unlocks product capabilities for the user — not as a regulatory demand imposed on them.",c:"Ethics & Trust",d:"advanced",rationale:"Tiered access where unverified users can explore and hold small amounts, with KYC unlocking higher limits, fiat access, and premium features. Apply data minimisation at each tier. Design the flow for mobile-first: real-time capture guidance, instant quality feedback, and zero re-submission loops. Use a step counter (2 of 3, not 2 of 8). Celebrate completion with a screen that immediately shows what is newly unlocked.",implication:"KYC completion is genuinely in the user's interest — it protects their ability to access their own funds in a dispute. The reframe from 'losing privacy' to 'gaining capabilities' requires sustained coherence across every touchpoint of the verification journey.",tags:["KYC/AML","Privacy Design","Regulatory Compliance"]},
+  {p:"Crisis Communication as a Design Discipline",st:"A security incident or protocol hack is not a PR problem. It is a product design problem with a defined response architecture.",c:"Ethics & Trust",d:"advanced",rationale:"Stage 1 (0–4 hours): specific factual banner, no speculation, disable affected features, link to official incident channel. Stage 2 (24–72 hours): plain-language post-mortem in the main app — not a developer blog. Proactively surface each affected user's specific exposure in their portfolio. Stage 3 (resolution): communicate compensation plan before any service restoration. Silence and vagueness are the most damaging possible responses.",implication:"The Ronin Network hack ($625M) and Wormhole exploit ($320M) are detailed public case studies in crisis communication design. In both cases, the communication failures were as damaging to user trust as the technical exploits themselves.",tags:["Crisis Design","Incident Response","Trust Recovery"]},
+
+  // ── Metrics & Growth ──
+  {p:"Volume as North Star, Guardrail Metrics as Truth Checks",st:"For a crypto exchange, total trading volume is the right North Star metric. But volume without guardrail metrics is easily gamed.",c:"Metrics & Growth",d:"intermediate",rationale:"CEX: total USD trading volume — directly correlated with fee revenue. DeFi Protocol: TVL. NFT Marketplace: secondary GMV, not primary mints. Each metric has distinct failure modes: high CEX volume with few unique wallets suggests wash trading; high TVL with low DEX volume suggests idle, unproductive capital. Guardrail metrics must be designed in parallel to prevent gaming the North Star.",implication:"Saying 'daily active users' as a North Star for any crypto product suggests insufficient domain understanding. A single whale session can exceed the revenue of thousands of casual users — DAU flattens this into meaninglessness.",tags:["North Star Metric","Product Analytics","Metric Trees"]},
+  {p:"Activation Defined as First Outbound Transaction",st:"A user who creates a wallet but never transacts has not been activated. Account creation is a vanity metric.",c:"Metrics & Growth",d:"intermediate",rationale:"Layer measurement across time horizons: D1 — onboarding completion, time-to-wallet-creation, specific drop-off step. D7/D30 — first outbound transaction rate (the activation event), initial deposit cohort, support ticket volume on wallet setup. D90 — retention, reactivation rate, average funds held as trust proxy. Define activation as first outbound transaction — it is the only metric that measures whether the user has accomplished the actual job for which they came.",implication:"'Time to first outbound transaction' is a materially stronger signal than account creation because it measures job completion, not intent. This distinction determines whether your onboarding roadmap prioritises sign-up flow or first-transaction flow.",tags:["Onboarding Metrics","Activation Rate","Cohort Analysis"]},
+  {p:"Cyclical Design: Bull and Bear Market Product Priorities",st:"A crypto product's job description changes dramatically between bull and bear markets. Design for both cycles.",c:"Metrics & Growth",d:"advanced",rationale:"Bull market priorities: maximise onboarding volume, expand feature breadth, build viral acquisition loops. Bear market priorities invert: retain existing users experiencing losses and anxiety, strengthen trust and security signals, prioritise yield-generating features (staking, flexible savings), and invest in financial education. Vanity acquisition metrics collapse in bear markets — focus shifts to retained active wallets, revenue per retained user, and NPS among the core segment.",implication:"Most product candidates design exclusively for bull market conditions. The product that serves its users well during a bear market — when they are scared and losing money — builds the kind of loyalty that no bull market growth hack can replicate.",tags:["Market Cycles","Retention Design","Feature Prioritisation"]},
+  {p:"Expected Value Over Single-Metric A/B Testing",st:"Never make a shipping decision from a single topline metric. Segment the data first to understand whose behaviour changed and whether that change is strategically desirable.",c:"Metrics & Growth",d:"advanced",rationale:"A variant showing 12% lower completion rate but 40% larger average transaction sizes requires expected value calculation using total fee revenue, not just completion rate. Then segment: did completion rate drop uniformly, or specifically among very small-value transactions? If concentrated among sub-$10 trades, you may be filtering low-value noise rather than losing meaningful volume. The segmentation determines the interpretation.",implication:"This is a classic product analytics trap. The correct question is never 'which variant performed better?' — it is 'for which users did it perform better, and does that align with our strategy?'",tags:["A/B Testing","Expected Value","Metric Trade-offs"]},
+  {p:"On-Chain Analytics as Competitive Intelligence",st:"Internal analytics tells you what users do on your platform. On-chain data tells you what they do everywhere else.",c:"Metrics & Growth",d:"advanced",rationale:"Four categories of insight unavailable internally: (1) Post-withdrawal destination — where do funds go after leaving? On-chain flows reveal competitor migration before it appears in churn metrics. (2) True wallet wealth — a wallet holding $10M elsewhere is a high-value prospect even with a $1K balance on your platform. (3) Competitor volume validation — on-chain settlement flows from competitor hot wallets reveal their true trading volumes. (4) Asset flow leading indicators — which assets are flowing into or out of all CEXes industry-wide, typically predicting demand shifts 2–4 weeks ahead.",implication:"The gap between what users do on your platform and what they do everywhere else is where the most valuable competitive insights live. Building Dune Analytics dashboards to monitor this gap is a concrete, demonstrable skill that distinguishes analysts who genuinely understand their users from those who only understand their product.",tags:["On-chain Analytics","Competitive Intelligence","Cross-platform Data"]},
+
+  // ── Trading UX ──
+  {p:"Shared Infrastructure, Differentiated Control Surface",st:"Simple mode and Pro mode are not two products. They are one product with a configurable control surface depth.",c:"Trading UX",d:"intermediate",rationale:"Simple mode surfaces market orders only, fiat-denominated amounts, and educational tooltips. Pro mode reveals full order book depth, multiple chart types, keyboard shortcuts, and all advanced order types. Both modes share the same order engine, positions panel, and account summary. Make Pro mode opt-in and persistently memorable, with a contextual upgrade prompt when a user repeatedly hits Simple mode limitations.",implication:"The failure mode is building two separate products instead of one coherent system. The test: can a user switch between modes mid-session and feel they are in the same product with more or fewer controls visible?",tags:["Progressive Complexity","Mode Switching","Trading Terminal"]},
+  {p:"Risk-Forward Portfolio Architecture",st:"A trading dashboard is a decision-support interface. Every item must either inform a decision or directly enable an action.",c:"Trading UX",d:"foundational",rationale:"Lead with total portfolio value in a single fiat number, then surface positions with unrealised losses, high leverage, or approaching liquidation before showing headline gains. Enable direct actions (close, add margin, redeem, swap) without navigating away from the overview. Avoid the 'balance sheet dump' failure mode where all assets are given equal visual weight regardless of value or risk.",implication:"Most portfolio dashboards are data displays. The best ones are control panels. The distinction determines whether a user can respond to a market event in 10 seconds or 3 minutes.",tags:["Information Architecture","Risk Hierarchy","Dashboard Design"]},
+  {p:"Stakes-Proportionate Confirmation Friction",st:"Speed and safety are not opposing values in trading UX. They operate at different position sizes.",c:"Trading UX",d:"intermediate",rationale:"Standard-size trades confirm in a single tap with an animated summary. Large trades or high-leverage positions trigger a mandatory review step showing: exact position size in fiat, precise liquidation price, total margin required, maximum potential loss in dollars (never only as a percentage), and current funding rate. A 'hold to confirm' interaction for positions above 20× leverage creates a deliberate pause without blocking experienced traders.",implication:"Uniform friction is the wrong model. The correct model is a friction curve: near-zero for small decisions, deliberately slowed for decisions that could wipe out an account. Designing this curve requires explicit decisions about where the thresholds sit.",tags:["Friction Design","Confirmation Flow","Risk Display"]},
+  {p:"Design for the Exception, Not the Average State",st:"The most important UX decisions in a trading product are made for the failure cases, not the success cases.",c:"Trading UX",d:"advanced",rationale:"When a stop-loss order fails during a flash crash: pre-trade disclosure of the difference between stop-market (guaranteed execution, uncertain price) and stop-limit (certain price, uncertain execution) must exist before the failure. Post-failure: plain-language explanation in the trade history, not an error code. A complete trade history showing intended price versus actual fill price for every order builds lasting transparency. Design for the 3am edge case.",implication:"Most traders discover the limitations of stop-loss orders only after experiencing a failure. Good design surfaces these limitations before the user needs them. The financial and emotional cost of a preventable surprise is always higher than the cost of upfront disclosure.",tags:["Edge Cases","Order Management","Transparency Design"]},
+  {p:"Network-First Withdrawal Flow Design",st:"The most common and most costly user error in CEX withdrawals is wrong network selection. Fix the flow architecture, not just the warning copy.",c:"Trading UX",d:"intermediate",rationale:"Three targeted interventions: (1) Network selection before everything else, with explicit warnings when the selected network differs from where funds currently reside — not inline text, but a blocking state. (2) Real-time address validation with identicon visual fingerprinting; a 'test transaction first' prompt for first-time destination addresses. (3) Minimum amount guardrails that block submission with a specific fiat-denominated explanation. QR code 'receive me' generation eliminates manual address entry.",implication:"Withdrawal errors are irreversible. This flow deserves more concentrated design and engineering investment than almost any other screen in a CEX. A single prevented error at scale — even one averted per million transactions — justifies significant cost.",tags:["Error Prevention","Deposit/Withdrawal UX","Address Verification"]},
+
+  // ── Trust & Safety ──
+  {p:"Crisis Response as a Staged Communication Architecture",st:"A security breach is not a single communication event. It is a four-stage design problem with distinct requirements at each stage.",c:"Trust & Safety",d:"advanced",rationale:"Stage 1 (0–2 hours): specific factual banner only — never vague maintenance language. Disable affected features. Publish only confirmed facts. Stage 2 (2–24 hours): scope, affected user segment, and actions being taken. Dedicated incident status page with timestamped updates. Stage 3 (24–72 hours): plain-language post-mortem accessible from the main app, not a developer blog. Affected users' specific exposure surfaced in their portfolio view. Stage 4: compensation plan communicated before service restoration.",implication:"Binance's 2019 hack ($40M) and FTX's collapse represent opposite ends of the crisis communication quality spectrum. Binance's transparent, rapid response with SAFU fund coverage preserved user trust. FTX's evasiveness destroyed it permanently. The design decisions are as consequential as the operational ones.",tags:["Crisis Communication","Incident Response","Trust Recovery"]},
+  {p:"Security as a Score, Not a Checklist",st:"A security settings page that lists available features has already failed. Present security as a score, rank actions by actual impact, and trigger reviews contextually.",c:"Trust & Safety",d:"intermediate",rationale:"Display the user's current security level as a clear grade or score. Rank available actions by real impact: 2FA is 100× more impactful than email notification preferences — surface the highest-impact missing action first. Implement a security health check flow triggered by risky actions: large withdrawals, new device logins. Show concrete consequences: 'Without 2FA, your account can be accessed with only your email and password.'",implication:"Security settings pages are among the lowest-engagement screens in any product. The design challenge is making security viscerally relevant at exactly the right moment — not buried in settings that users open twice a year.",tags:["Security UX","Behavioural Design","Settings Architecture"]},
+  {p:"Proof of Reserves as a Legibility Problem",st:"Most users cannot evaluate cryptographic proofs. The design problem is translating technical solvency evidence into accessible trust signals without misleading users about what is being guaranteed.",c:"Trust & Safety",d:"advanced",rationale:"Show reserve ratios for major assets prominently in the main interface. Explain plainly what proof of reserves proves and what it does not prove — it demonstrates on-chain assets exist; it does not independently verify the absence of undisclosed off-chain liabilities. Allow any user to verify their balance is included in the Merkle tree proof without cryptographic expertise. Update daily or in real time — monthly static snapshots are insufficient.",implication:"Publishing a Merkle tree proof as a PDF is not a trust design solution. It is a technical artefact that becomes a trust signal only when the product design makes it legible, verifiable, and persistently visible to the users it is supposed to reassure.",tags:["Transparency Design","Proof of Reserves","Trust Architecture"]},
+  {p:"Compliance Restrictions as a Relationship Communication Design Problem",st:"When a user's account is restricted for compliance reasons, the goal is completing the regulatory requirement while preserving the user relationship. Both are achievable with thoughtful design.",c:"Trust & Safety",d:"intermediate",rationale:"Specificity over vagueness: 'Your account has been temporarily placed under compliance review' is measurably less alarming than 'Account suspended.' Set clear expectations with an estimated resolution timeline and a concrete escalation path. Maintain partial read-only access throughout the restriction: portfolio viewing, market monitoring, and open order cancellation. Users need to see their assets are safe.",implication:"Compliance restrictions handled with communication silence drive immediate social media escalation and competitor migration. The business cost of a well-designed compliance communication flow is always lower than the cost of the reputational damage that follows a poorly handled one.",tags:["Compliance UX","Communication Design","Account Restriction"]},
+  {p:"KYC as Progressive Capability, Not Binary Access",st:"Design the verification journey as progressive capability unlocking. Every tier should feel like gaining something, not giving something up.",c:"Trust & Safety",d:"advanced",rationale:"Show a persistent access map from the very first session — what each verification tier unlocks in concrete terms. Trigger verification prompts contextually at the exact moment a user first hits an unverified limit — not as a generic notification. Celebrate each completed tier with a screen that immediately shows newly unlocked capabilities. For the full KYC step, frame government ID submission as protecting the user's ability to access their own funds in a dispute.",implication:"The reframe from 'losing privacy' to 'gaining capabilities' requires sustained design coherence across every touchpoint of the verification journey. A single poorly framed screen — a 'Required by law' header, a generic error on document rejection — can undermine the entire reframe and create the exact adversarial dynamic you are trying to avoid.",tags:["KYC Journey","Capability Framing","Trust Building"]},
+
+  // ── Risk Communication ──
+  {p:"Consequence-Forward Leverage Design",st:"The product goal is not preventing access to leverage. It is ensuring high-leverage decisions are made with genuine rather than performative understanding of the consequences.",c:"Risk Communication",d:"advanced",rationale:"As leverage increases, the liquidation price updates in real time showing the exact dollar loss required to trigger it. At 10× and above, overlay a 'liquidation zone' directly on the price chart. Require a brief risk acknowledgement for first-time use of each leverage tier — only first time, to prevent habituation. Default new accounts to 5× maximum with a clear path to unlock higher tiers after a short risk disclosure flow.",implication:"The UX of high leverage is one of the most consequential design decisions in financial products. Getting it wrong — in either direction — causes real harm: restricting access harms sophisticated users; obscuring consequences harms retail users. The design must thread this needle deliberately.",tags:["Leverage UX","Risk Display","Retail Protection"]},
+  {p:"Four-Zone Liquidation Warning Architecture",st:"Liquidation alerts have two failure modes: too many (users disable notifications, miss the critical one) or too few (users liquidate without warning). Design a tiered architecture that avoids both.",c:"Risk Communication",d:"intermediate",rationale:"Comfortable zone (>30% margin buffer): no alerts. Yellow zone (15–30%): in-app notification with current margin ratio, liquidation price, and two direct action buttons. Orange zone (5–15%): push notification with urgent but specific language, same actions directly from the notification. Red zone (<5%): simultaneous push and email; lock the primary UI to critical margin status; one-tap margin addition from any screen.",implication:"Alert thresholds should be user-configurable within a safe default range. A user with high risk tolerance who holds positions at 20% margin buffer will disable a system that alerts them constantly. A user with low risk tolerance needs earlier warnings. The architecture must accommodate both.",tags:["Notification Design","Liquidation Alerts","Urgency System"]},
+  {p:"Visual Permanence Signals for Unrealised PnL",st:"Unrealised PnL confusion is a financial literacy problem that interface design can systematically address at scale — without removing the information.",c:"Risk Communication",d:"advanced",rationale:"Apply a persistent visual treatment to unrealised PnL — a dotted border, desaturated colour, or clock icon — that signals impermanence at a glance. A plain-language explanation accessible via single tap: 'This profit only becomes real money when you close your position.' Intercept when a user attempts to withdraw based on a balance that includes unrealised PnL. On the trade close screen, show both the unrealised PnL at closure and the actual cash received after fees.",implication:"Unrealised PnL confusion is among the most common causes of poor trading decisions for retail users in their first year. This is a financial literacy problem. A product that systematically reduces this confusion with interface design is performing a measurable user benefit — not just meeting a design standard.",tags:["Financial Literacy","PnL Display","Education Design"]},
+  {p:"Carrying Cost Transparency for Perpetual Positions",st:"Many retail traders open long-term leveraged positions without understanding that persistent positive funding rates make holding perpetuals genuinely expensive.",c:"Risk Communication",d:"intermediate",rationale:"Funding rate display needs three layers: (1) Current rate as both the raw per-interval rate and the annualised equivalent. (2) Historical context — 7-day and 30-day chart showing whether the current rate is extreme or typical. (3) Position cost calculator: the exact dollar cost of holding the user's actual position size at the current rate for 1 day, 7 days, and 30 days forward.",implication:"Experienced traders use extreme funding rates as a contrarian sentiment indicator — very high positive funding signals crowded longs. The design should progressively expose this advanced insight to retail users as they gain experience, creating genuine financial literacy rather than dependence on the platform.",tags:["Funding Rate UX","Cost Transparency","Educational Design"]},
+  {p:"Unified Risk Control Centre for Multi-Product Portfolios",st:"A sophisticated trader's risk management dashboard must function as a control centre, not a collection of separate product views.",c:"Risk Communication",d:"advanced",rationale:"Four non-negotiable elements: (1) Aggregate margin utilisation gauge across all products simultaneously. (2) Scenario analysis panel showing how a -5%, -10%, -20% market move affects all positions simultaneously. (3) Greeks summary for options (delta, gamma, theta, vega) alongside perpetual delta — with net portfolio delta as the headline figure. (4) One-click 'reduce all' emergency action to rapidly reduce overall risk without position-by-position navigation.",implication:"Sophisticated traders think in terms of net portfolio exposure and scenario risk, not individual position management. A dashboard that forces them to aggregate this view mentally — across separate futures, options, and spot margin screens — is not serving their actual workflow.",tags:["Portfolio Risk","Options UX","Advanced Trading"]},
+
+  // ── Onboarding & KYC ──
+  {p:"KYC as Benefit-Led Progressive Access",st:"Lead the verification flow with what the user gains, not with what the regulation requires.",c:"Onboarding & KYC",d:"intermediate",rationale:"'Complete verification to unlock $8M daily withdrawals, fiat deposits, and exclusive earn products' rather than 'Verification required by applicable law.' Show a persistent tiered access map from the first session. Design document upload for mobile-first: real-time capture quality guidance, automatic edge detection, instant feedback. Use a step counter (2 of 3, not 2 of 8). Send a completion confirmation that immediately activates and shows newly unlocked capabilities.",implication:"KYC completion is genuinely in the user's interest — it protects their ability to access their own funds in a dispute. The design challenge is making this user benefit feel concrete and immediate, not abstract and institutional.",tags:["KYC Design","Onboarding Flow","Progressive Access"]},
+  {p:"Goal-Oriented First-Time Buyer Flow",st:"Design around the user's goal — 'I want to own some Bitcoin' — not around the exchange's internal product taxonomy.",c:"Onboarding & KYC",d:"foundational",rationale:"Start with one question: 'What do you want to do?' with three paths: Buy, Sell, or Explore. Display the purchase entirely in fiat throughout: 'You are buying $100 of Bitcoin. You will receive approximately 0.00143 BTC.' Show the total fee in fiat before the confirmation screen. After purchase, show a clear 'What now?' screen explaining what the user owns, where it is held, and what their options are.",implication:"The first-time buyer journey is the most important funnel in the product. The language, metaphors, and sequencing decisions made here determine whether this user becomes a long-term customer or never returns. Every word of copy in this flow is a product decision with measurable commercial consequence.",tags:["First-Time User","Fiat Mental Models","Beginner UX"]},
+  {p:"Separate Institutional and Retail Product Surfaces",st:"Institutional clients generate disproportionate revenue but have completely different product requirements from retail users. Meeting both needs without compromise requires genuinely separate surfaces.",c:"Onboarding & KYC",d:"advanced",rationale:"Institutional onboarding is a guided, relationship-managed process — a dedicated account manager from day one, not a self-serve form. Sub-account architecture needs visual management: create, name, fund, and configure role-based permissions through a clean admin interface. API key management must be enterprise-grade: role-specific permissions, IP allowlisting, webhook notifications, comprehensive access logs.",implication:"The temptation is to build one flexible onboarding flow that serves both segments. The outcome is always a flow that serves neither well. The revenue concentration in institutional clients justifies dedicated product investment that would look disproportionate for retail.",tags:["Institutional UX","Sub-Account Design","Enterprise Product"]},
+  {p:"Re-Verification as a Relationship Communication Problem",st:"Re-verification is an involuntary interruption to an existing relationship. Every design decision should minimise friction while communicating clearly that completion is in the user's own interest.",c:"Onboarding & KYC",d:"intermediate",rationale:"Provide maximum advance notice — 60-day, 30-day, 7-day — with each communication specifying what access restrictions will activate and exactly when. Pre-populate all previously verified information that has not changed. Maintain read-only portfolio access throughout: users can view positions, monitor markets, cancel open orders — but cannot trade or withdraw. Offer multiple acceptable document types upfront.",implication:"The business cost of a poorly designed re-verification flow is not just the users who do not complete it. It is the support volume, social media escalation, and competitive migration that follows when users cannot access their funds without understanding why.",tags:["Re-verification UX","Compliance Communication","Relationship Preservation"]},
+  {p:"Cross-Platform Behavioural Intelligence",st:"The most valuable product insights come from the gap between what users do on your platform and what they do everywhere else.",c:"Onboarding & KYC",d:"advanced",rationale:"Four categories of on-chain insight unavailable internally: (1) Post-withdrawal destination — where do funds go? On-chain flows reveal competitor migration weeks before it appears in churn metrics. (2) Wallet wealth profiling — a wallet holding $10M elsewhere is a high-value prospect even with a $1K balance with you. (3) Competitor volume validation from settlement flows. (4) Asset trend leading indicators predicting demand shifts 2–4 weeks ahead.",implication:"No Web2 analytics stack can replicate this level of cross-platform behavioural insight. The synthesis of internal analytics and on-chain data is the most powerful analytical capability available to a crypto exchange product team — and one of the few genuine competitive moats that cannot be copied.",tags:["On-chain Analytics","Competitive Intelligence","Mixed Methods Analytics"]},
+];
+
+
+
+// ─── STATE ────────────────────────────────────────────────────────────
+let gCat = 'All', qCat = 'All', selCard = null;
+
+// ─── NAV ──────────────────────────────────────────────────────────────
+function showView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  clearDetail();
+}
+
+function showGlossary(cat, el) {
+  gCat = cat || 'All';
+  showView('glossary', el || document.getElementById('nv-g-' + (cat || 'All')));
+  document.getElementById('g-search').value = '';
+  syncPills('g-filter-row', gCat);
+  renderGlossary();
+}
+
+function showPrinciples(cat, el) {
+  qCat = cat || 'All';
+  showView('questions', el || document.getElementById('nv-q-' + (cat || 'All')));
+  document.getElementById('q-search').value = '';
+  syncPills('q-filter-row', qCat);
+  renderPrinciples();
+}
+
+function globalSearch() {
+  const q = document.getElementById('global-q').value.trim();
+  if (!q) return;
+  gCat = 'All';
+  document.getElementById('g-search').value = q;
+  showGlossary('All');
+  setTimeout(renderGlossary, 50);
+}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────
+function buildFilters() {
+  const gRow = document.getElementById('g-filter-row');
+  ['All', ...Object.keys(G_META)].forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'fpill' + (cat === 'All' ? ' active' : '');
+    b.textContent = cat; b.dataset.cat = cat;
+    b.onclick = () => { gCat = cat; syncPills('g-filter-row', cat); renderGlossary(); };
+    gRow.appendChild(b);
+  });
+  const qRow = document.getElementById('q-filter-row');
+  ['All', ...Object.keys(Q_META)].forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'fpill' + (cat === 'All' ? ' active' : '');
+    b.textContent = cat; b.dataset.cat = cat;
+    b.onclick = () => { qCat = cat; syncPills('q-filter-row', cat); renderPrinciples(); };
+    qRow.appendChild(b);
+  });
+}
+
+function syncPills(id, active) {
+  document.querySelectorAll('#' + id + ' .fpill').forEach(b => b.classList.toggle('active', b.dataset.cat === active));
+}
+
+// ─── HOME ────────────────────────────────────────────────────────────
+function buildHome() {
+  const picks = [0, 5, 10, 15, 20, 25].map(i => PRINCIPLES[i]);
+  document.getElementById('home-challenges').innerHTML = picks.map(p => {
+    const m = Q_META[p.c] || { qc:'qc-ux', color:'#8b7cf8' };
+    return `<div class="ch-card ${m.qc}" onclick="showPrinciples('${p.c}')" style="--dot:${m.color}">
+      <div class="ch-track">
+        <span class="ch-track-dot" style="background:${m.color}"></span>
+        ${p.c} · ${p.d}
+      </div>
+      <div class="ch-q">${p.p}</div>
+      <div class="ch-principle">${p.st}</div>
+    </div>`;
+  }).join('');
+
+  // Glossary map cells
+  const catGroups = [
+    { name:'Blockchain Core', gmt:'gmt-bc', icon:'⛓' },
+    { name:'DeFi',            gmt:'gmt-df', icon:'⚡' },
+    { name:'Exchange & Trading', gmt:'gmt-ex', icon:'⇄' },
+    { name:'NFT & Web3',     gmt:'gmt-nf', icon:'◈' },
+    { name:'Wallets & Security', gmt:'gmt-wl', icon:'⬡' },
+    { name:'Tokens & Assets', gmt:'gmt-tk', icon:'◎' },
+    { name:'Layer 2 & Scaling', gmt:'gmt-l2', icon:'▲' },
+    { name:'Consensus',      gmt:'gmt-cs', icon:'⚙' },
+    { name:'CEX Trading',    gmt:'gmt-cx', icon:'↕' },
+    { name:'CEX Market',     gmt:'gmt-cx', icon:'⊞' },
+    { name:'CEX Risk',       gmt:'gmt-cx', icon:'⊘' },
+    { name:'CEX Compliance', gmt:'gmt-cx', icon:'⊛' },
+    { name:'CEX Products',   gmt:'gmt-cx', icon:'◆' },
+    { name:'CEX Custody',    gmt:'gmt-cx', icon:'⬒' },
+  ];
+  const counts = {};
+  GLOSSARY.forEach(d => { counts[d.c] = (counts[d.c] || 0) + 1; });
+  document.getElementById('home-glossmap').innerHTML = catGroups.map(g => {
+    const color = (G_META[g.name] || {}).color || '#5b52d4';
+    return `<div class="gm-cell ${g.gmt}" onclick="showGlossary('${g.name}')" style="border-top-color:${color}">
+      <div class="gm-icon">${g.icon}</div>
+      <div class="gm-name">${g.name}</div>
+      <div class="gm-count">${counts[g.name] || 0} concepts</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── GLOSSARY ────────────────────────────────────────────────────────
+function renderGlossary() {
+  const q = (document.getElementById('g-search').value || '').toLowerCase();
+  const items = GLOSSARY.filter(d =>
+    (gCat === 'All' || d.c === gCat) &&
+    (!q || d.t.toLowerCase().includes(q) || d.d.toLowerCase().includes(q) || d.c.toLowerCase().includes(q))
+  );
+  document.getElementById('g-view-title').textContent = gCat === 'All' ? 'All Concepts' : gCat;
+  document.getElementById('g-view-count').textContent = items.length + ' term' + (items.length !== 1 ? 's' : '');
+  document.getElementById('g-grid').innerHTML = items.map(d => {
+    const i = GLOSSARY.indexOf(d);
+    const m = G_META[d.c] || { cb:'', chip:'' };
+    return `<div class="g-card ${m.cb}${selCard === 'g-'+i ? ' selected' : ''}" onclick="selectG(${i})">
+      <div class="g-top">
+        <span class="g-cat">${d.c}</span>
+        <span class="g-lv ${LV_CLS[d.lv]}">${d.lv}</span>
+      </div>
+      <div class="g-term">${d.t}</div>
+      <div class="g-def">${d.d.slice(0,90)}…</div>
+    </div>`;
+  }).join('') || '<div style="color:var(--parchment3);padding:20px;font-size:13px;font-style:italic">No results.</div>';
+}
+
+function selectG(i) {
+  selCard = 'g-' + i;
+  renderGlossary();
+  const d = GLOSSARY[i];
+  const m = G_META[d.c] || { chip:'', color:'#8b7cf8', cb:'' };
+  const rel = GLOSSARY.filter(x => x.c === d.c && x.t !== d.t).slice(0, 4);
+  showDetail(`
+    <div class="db-type">${d.c.startsWith('CEX') ? 'CEX / CeFi' : 'Web3'} · Concept</div>
+    <div class="db-title">${d.t}</div>
+    <span class="db-cat ${m.chip}" style="border-color:${m.color}30;color:${m.color}">${d.c} · ${d.lv}</span>
+    <div class="db-def">${d.d}</div>
+    <div class="db-section-label">In practice</div>
+    <div class="db-eg">${d.eg}</div>
+    ${rel.length ? `<div class="db-rule"></div>
+    <div class="db-related-title">Related concepts</div>
+    <div class="db-related-list">${rel.map(r => {
+      const ri = GLOSSARY.indexOf(r);
+      return `<div class="db-rel-item" onclick="selectG(${ri})"><span class="db-rel-arrow">→</span>${r.t}</div>`;
+    }).join('')}</div>` : ''}
+  `);
+}
+
+// ─── PRINCIPLES ──────────────────────────────────────────────────────
+function renderPrinciples() {
+  const q = (document.getElementById('q-search').value || '').toLowerCase();
+  const items = PRINCIPLES.filter(d =>
+    (qCat === 'All' || d.c === qCat) &&
+    (!q || d.p.toLowerCase().includes(q) || d.st.toLowerCase().includes(q) || d.rationale.toLowerCase().includes(q) || d.c.toLowerCase().includes(q))
+  );
+  document.getElementById('q-view-title').textContent = qCat === 'All' ? 'All Principles' : qCat;
+  document.getElementById('q-view-count').textContent = items.length + ' principle' + (items.length !== 1 ? 's' : '');
+  const dCls = {foundational:'dp-f', intermediate:'dp-i', advanced:'dp-a'};
+  document.getElementById('q-list').innerHTML = items.map(d => {
+    const i = PRINCIPLES.indexOf(d);
+    const m = Q_META[d.c] || { qc:'qc-ux' };
+    return `<div class="q-card ${m.qc}${selCard === 'q-'+i ? ' selected' : ''}" id="qc-${i}" onclick="toggleP(${i},this)">
+      <div class="q-head">
+        <div class="q-principle-block">
+          <div class="q-principle-name">${d.p}</div>
+          <div class="q-stance">${d.st}</div>
+        </div>
+        <div class="q-meta">
+          <span class="d-pip ${dCls[d.d]}">${d.d}</span>
+          <span class="q-arrow">▾</span>
+        </div>
+      </div>
+      <div class="q-body">
+        <div class="q-body-inner">
+          <div class="answer-block">
+            <div class="ab-label">Rationale</div>
+            <div class="ab-text">${d.rationale}</div>
+          </div>
+          <div class="insight-block">${d.implication}</div>
+          <div class="q-tags">${d.tags.map(t => `<span class="q-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--parchment3);padding:20px;font-size:13px;font-style:italic">No results.</div>';
+}
+
+function toggleP(i, el) {
+  el.classList.toggle('open');
+  selCard = 'q-' + i;
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const d = PRINCIPLES[i];
+  const m = Q_META[d.c] || { qc:'qc-ux', color:'#8b7cf8' };
+  const dCls = {foundational:'dp-f', intermediate:'dp-i', advanced:'dp-a'};
+  const rel = PRINCIPLES.filter(x => x.c === d.c && x.p !== d.p).slice(0, 3);
+  showDetail(`
+    <div class="db-type">Design Principle · ${d.c}</div>
+    <div class="db-title">${d.p}</div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+      <span class="db-cat" style="color:${m.color};border-color:${m.color}30">${d.c}</span>
+      <span class="d-pip ${dCls[d.d]}">${d.d}</span>
+    </div>
+    <div class="db-section-label">Stance</div>
+    <div style="font-size:15px;font-weight:500;color:var(--parchment);line-height:1.55;margin-bottom:18px;font-style:italic;">${d.st}</div>
+    <div class="db-section-label">Rationale</div>
+    <div class="db-answer">
+      <div class="db-answer-text">${d.rationale}</div>
+    </div>
+    <div class="db-section-label">Implication</div>
+    <div class="db-insight">${d.implication}</div>
+    <div class="db-section-label">Tags</div>
+    <div class="db-tags">${d.tags.map(t => `<span class="db-tag">${t}</span>`).join('')}</div>
+    ${rel.length ? `<div class="db-rule"></div>
+    <div class="db-related-title">Related principles</div>
+    <div class="db-related-list">${rel.map(r => {
+      const ri = PRINCIPLES.indexOf(r);
+      return `<div class="db-rel-item" onclick="toggleP(${ri},document.getElementById('qc-${ri}'))"><span class="db-rel-arrow">→</span>${r.p}</div>`;
+    }).join('')}</div>` : ''}
+  `);
+}
+
+// ─── FEATURED PANEL (default right panel state) ──────────────────────
+function buildFeaturedPanel() {
+  // Pick principle of the day — rotates daily based on date
+  const dayIndex = Math.floor(Date.now() / 86400000) % PRINCIPLES.length;
+  const p = PRINCIPLES[dayIndex];
+  const m = Q_META[p.c] || { color:'#9d90fa' };
+
+  const domains = [
+    { name:'Blockchain Core', icon:'⛓', color:'#8b7cf8', count:10 },
+    { name:'DeFi',            icon:'⚡', color:'#4da6ff', count:8  },
+    { name:'Exchange & Trading', icon:'⇄', color:'#50d49a', count:7 },
+    { name:'NFT & Web3',      icon:'◈', color:'#f07878', count:7  },
+    { name:'CEX Trading',     icon:'↕', color:'#6898e0', count:10 },
+    { name:'CEX Risk',        icon:'⊘', color:'#f07878', count:8  },
+    { name:'CEX Compliance',  icon:'⊛', color:'#f5a050', count:8  },
+    { name:'Wallets & Security', icon:'⬡', color:'#e070b0', count:6 },
+  ];
+
+  document.getElementById('feat-panel').innerHTML = `
+    <div class="fp-eyebrow">
+      <div class="fp-eyebrow-line"></div>
+      <div class="fp-eyebrow-text">Principle of the day</div>
+      <div class="fp-eyebrow-line"></div>
+    </div>
+
+    <div class="fp-principle" onclick="showPrinciples('${p.c}')" title="View all ${p.c} principles">${p.p}</div>
+
+    <div class="fp-stance">${p.st}</div>
+
+    <div class="fp-rationale">${p.rationale.slice(0, 200)}…</div>
+
+    <span class="fp-cat" style="color:${m.color};border-color:${m.color}30;background:${m.color}0d"
+      onclick="showPrinciples('${p.c}')">
+      ${p.c} · ${p.d}
+    </span>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-legend-title">Depth levels</div>
+    <div class="fp-legend">
+      <div class="fp-legend-row">
+        <span class="fp-legend-badge dp-f">Foundational</span>
+        <div class="fp-legend-desc">Core vocabulary and mental models. Start here to build shared language with engineering and product teams.</div>
+      </div>
+      <div class="fp-legend-row">
+        <span class="fp-legend-badge dp-i">Intermediate</span>
+        <div class="fp-legend-desc">Mechanisms and trade-offs. Use these to reason through design decisions and challenge assumptions.</div>
+      </div>
+      <div class="fp-legend-row">
+        <span class="fp-legend-badge dp-a">Advanced</span>
+        <div class="fp-legend-desc">Edge cases, systemic risks, and institutional patterns. Reference when working on high-stakes or complex features.</div>
+      </div>
+    </div>
+
+    <div class="fp-divider"></div>
+
+    <div class="fp-legend-title">Browse concept domains</div>
+    <div class="fp-domains">
+      ${domains.map(d => `
+        <div class="fp-domain-chip" style="border-left-color:${d.color}" onclick="showGlossary('${d.name}')">
+          <span class="fp-domain-icon">${d.icon}</span>
+          <span class="fp-domain-name">${d.name}</span>
+          <span class="fp-domain-n">${d.count}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ─── DETAIL ──────────────────────────────────────────────────────────
+function showDetail(html) {
+  document.getElementById('de-empty').style.display = 'none';
+  const b = document.getElementById('de-body');
+  b.style.display = 'block';
+  b.innerHTML = html;
+  b.scrollTop = 0;
+}
+function clearDetail() {
+  selCard = null;
+  document.getElementById('de-empty').style.display = 'flex';
+  document.getElementById('de-body').style.display = 'none';
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────
+buildFilters();
+buildHome();
+buildFeaturedPanel();
+renderGlossary();
+renderPrinciples();
+</script>
+</body>
+</html>
